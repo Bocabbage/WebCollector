@@ -1,9 +1,10 @@
-from configs import PROXY_ADDR, SEARCH_ROUTE, BASE_URL
+from configs import PROXY_ADDR, SEARCH_ROUTE, BASE_URL, QBITT_ADDR
 from typing import Optional
 from logger import LOGGER
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 from qbittorrent import Client
+import os
 import requests
 
 proxies = {
@@ -12,7 +13,11 @@ proxies = {
 }
 
 
-def _get_url_by_name(anime_name: str) -> Optional[str]:
+def get_url_by_name(anime_name: str) -> Optional[str]:
+    r'''
+        Get detail-page url (without domain) for "anime_name"
+        using search api provided by mikanani.
+    '''
     search_url = BASE_URL + SEARCH_ROUTE + quote(anime_name)
     try:
         response = requests.get(
@@ -35,10 +40,15 @@ def _get_url_by_name(anime_name: str) -> Optional[str]:
         return None
 
 
-def _get_magnet(
+def get_magnet(
         detail_url_route: str,
         target_sources: list = ['ANi']
 ) -> Optional[str]:
+    r'''
+        Get magnet from the detail-page.
+        [Todo] Currently hard-code to always get the first magnet
+        of Ani source, which need to be optimized to use general rules.
+    '''
     try:
         # print(f"BASE_URL + detail_url_route: {BASE_URL + detail_url_route}")
         response = requests.get(
@@ -55,11 +65,11 @@ def _get_magnet(
     target_group = None
     for source in target_sources:
         target_groups = soup.find_all('a', text=source, target='_blank')
-
         if target_groups:
             target_group = target_groups[0]
             target_group = target_group.find_parent('div')
             break
+
     if target_group:
         try:
             target_table = target_group.find_next('table')
@@ -74,10 +84,14 @@ def _get_magnet(
     return magnet
 
 
-def _download_obj(magnet: str, savepath: str) -> bool:
-    qb = Client('http://127.0.0.1:8080/', verify=False)
+def download_obj(magnet: str, savepath: str) -> bool:
+    r'''
+        Download the source use qbittorrent.
+        Make sure the qbittorrent is installed and correctly configurated.
+    '''
+    qb = Client(QBITT_ADDR, verify=False)
     try:
-        # Todo: Add retry
+        # [Todo] Add retry
         qb.download_from_link(magnet, savepath=savepath)
         return True
     except Exception as e:

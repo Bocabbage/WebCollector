@@ -1,4 +1,4 @@
-from src.utils import _get_url_by_name, _get_magnet, _download_obj
+from src.utils import get_url_by_name, get_magnet, download_obj
 
 
 def test_get_url_by_name():
@@ -6,18 +6,18 @@ def test_get_url_by_name():
         '葬送的芙莉莲'
     ]
     for name in test_name_lists:
-        url_route = _get_url_by_name(name)
+        url_route = get_url_by_name(name)
         print(f"url route for {name}: {url_route}")
 
 
 def test_get_magnet():
-    magnet = _get_magnet('/Home/Bangumi/3141')
+    magnet = get_magnet('/Home/Bangumi/3141')
     print(f"magnet: {magnet}")
 
 
 def test_download_obj():
-    magnet = _get_magnet('/Home/Bangumi/3141')
-    _download_obj(magnet, './C:/Users/37806/OneDrive/Utils')
+    magnet = get_magnet('/Home/Bangumi/3141')
+    download_obj(magnet, './C:/Users/37806/OneDrive/Utils')
 
 
 if __name__ == '__main__':
