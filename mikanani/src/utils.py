@@ -28,7 +28,7 @@ def get_url_by_name(anime_name: str) -> Optional[str]:
         links = soup.find_all(name='ul', class_='an-ul')
         if links:
             link = links[0].find('a')
-            print(f"link: {link}")
+            # print(f"link: {link}")
             url_route = link.get('href')
             LOGGER.info(f"{anime_name} url route found: {url_route}")
             return url_route
@@ -59,7 +59,7 @@ def get_magnet(
         LOGGER.debug(f'get html file failed for detail_url {detail_url_route}: exception {e}')
         return None
 
-    print(response.text)
+    # print(response.text)
     soup = BeautifulSoup(response.text, 'html.parser')
     magnet = None
     target_group = None
