@@ -46,7 +46,7 @@ def get_magnet(
 ) -> Optional[str]:
     r'''
         Get magnet from the detail-page.
-        [Todo] Currently hard-code to always get the first magnet
+        [todo] Currently hard-code to always get the first magnet
         of Ani source, which need to be optimized to use general rules.
     '''
     try:
@@ -91,7 +91,7 @@ def download_obj(magnet: str, savepath: str) -> bool:
     '''
     qb = Client(QBITT_ADDR, verify=False)
     try:
-        # [Todo] Add retry
+        # [todo] Add retry
         qb.download_from_link(magnet, savepath=savepath)
         return True
     except Exception as e:

@@ -1,9 +1,11 @@
+import os
 import loguru
-from configs import LOG_FILE
+from configs import LogConfig
 
+os.makedirs(LogConfig['log_dir'], exist_ok=True)
 LOGGER = loguru.logger
 LOGGER.add(
-    LOG_FILE,
+    LogConfig['log_dir'],
     format="{time}|{level}|{message}",
-    level="INFO",
+    level=LogConfig['log_dir'],
 )

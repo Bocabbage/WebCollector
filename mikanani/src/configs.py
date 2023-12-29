@@ -1,5 +1,22 @@
-BASE_URL = 'https://mikanani.me'
-SEARCH_ROUTE = '/Home/Search?searchstr='
-PROXY_ADDR = '127.0.0.1:7890'
-LOG_FILE = './mikanami_crawler.log'
-QBITT_ADDR = '127.0.0.1:8080'
+import os
+from typing import Dict, Optional
+
+LogConfig: Dict[str, Optional[str]] = {
+    'log_dir': os.getenv('LOG_DIR', '../logs/mikanani.log'),
+    'log_level': os.getenv('LOG_LEVEL', 'INFO'),
+}
+
+RSSConfig: Dict[str, str] = {
+    'config_dir': os.getenv('CONFIG_DIR'),
+}
+
+QbitConfig: Dict[str, str] = {
+    'qbit_addr': os.getenv('QBIT_ADDR'),
+    'torrent_file_dir': os.getenv('TORRENT_FILE_DIR', './'),
+    'media_file_dir': os.getenv('MEDIA_FILE_DIR', './')
+}
+
+ProxyConfig: dict = {
+    'proxy_enable': False if os.getenv('PROXY_ENABLE', "False") == "False" else True,
+    'proxy_addr': os.getenv('PROXY_ADDR'),
+}

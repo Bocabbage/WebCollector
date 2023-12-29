@@ -1,4 +1,12 @@
 __pycache__/
+.vscode
 
 *.log
-*.env
+.env
+!example.env
+
+*/config/*.yaml
+*/config/*.yml
+!example.yaml
+
+*example*.json

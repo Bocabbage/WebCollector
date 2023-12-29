@@ -17,7 +17,7 @@ def test_get_magnet():
 
 def test_download_obj():
     magnet = get_magnet('/Home/Bangumi/3141')
-    download_obj(magnet, './C:/Users/37806/OneDrive/Utils')
+    download_obj(magnet, './')
 
 
 if __name__ == '__main__':
