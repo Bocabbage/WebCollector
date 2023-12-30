@@ -1,11 +1,11 @@
 import os
 import traceback
-from job import RSSJob
-from logger import LOGGER
+from .job import RSSJob
+from .logger import LOGGER
 
 class MikanamiAnimeSubWorker:
     def __init__(self):
-        config_path = f"{os.path.abspath(__file__)}/../config"
+        config_path = f"{os.path.dirname(os.path.abspath(__file__))}/../config"
         self.job_obj: RSSJob = RSSJob(config_path)
     
     def run(self):
@@ -16,7 +16,7 @@ class MikanamiAnimeSubWorker:
             LOGGER.error(f"get_torrent_urls error: exception-{e}, {traceback.format_exc()}")
         
         try:
-            self.job_obj.send_task_to_qbit(tlist)
-            LOGGER.info(f"send_task_to_qbit success: {tlist}.")
+            expected_sources = self.job_obj.send_task_to_qbit(tlist)
+            LOGGER.info(f"send_task_to_qbit success, new files number: {len(expected_sources)}.")
         except Exception as e:
             LOGGER.error(f"send_task_to_qbit error: exception-{e}, {traceback.format_exc()}")

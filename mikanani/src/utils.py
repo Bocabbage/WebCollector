@@ -4,7 +4,7 @@ from logger import LOGGER
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 from qbittorrent import Client
-import os
+# import os
 import requests
 
 proxies = {

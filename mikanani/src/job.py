@@ -5,10 +5,11 @@ import traceback
 import requests
 import yaml
 import qbittorrent
+import base64
 from typing import Optional, List
-from configs import ProxyConfig, QbitConfig
-from logger import LOGGER
-from errors import NoRSSYamlError, RSSRuleFileError, RSSRuleFileErrCode
+from .configs import ProxyConfig, QbitConfig
+from .logger import LOGGER
+from .errors import NoRSSYamlError, RSSRuleFileError, RSSRuleFileErrCode
 # from utils import get_url_by_name, get_magnet, download_obj
 
 
@@ -35,7 +36,7 @@ class RSSJob:
             name: str = rss_rules['name']
             rss_url: str = rss_rules['rss_url']
             rule_version: str = rss_rules['rule_version']
-            rule_regex: str = rss_rules['rule_regex']
+            rule_regex: str = r"{}".format(rss_rules['rule_regex'])
         except KeyError as e:
             not_found_key = e.args[0]
             raise RSSRuleFileError(
@@ -51,7 +52,7 @@ class RSSJob:
                 message=f"{RSSRuleFileErrCode.RSS_XML_REQUEST_ERROR.name}: request error code={response.status_code}",
                 error_code=RSSRuleFileErrCode.RSS_XML_REQUEST_ERROR.value
             )
-        rss_xml_dict = xmltodict(response.text)
+        rss_xml_dict = xmltodict.parse(response.text)
         regex_pattern = re.compile(rule_regex)
         if rule_version == 'latest':
             try:
@@ -59,13 +60,13 @@ class RSSJob:
                 latest_number: int = -1
                 latest_url: Optional[str] = None
                 
-                for item in target_items.items():
+                for item in target_items:
                     title = item['title']
                     if match_obj := regex_pattern.match(title):
-                        number = int(match_obj.groups(1))
+                        number = int(match_obj.groups(1)[0])
                         if number > latest_number:
                             latest_number = number
-                            latest_url = item["torrent"]["link"]
+                            latest_url = item["enclosure"]["@url"]
                 if latest_url is not None:
                     result_list.append(latest_url)
             except Exception as e:
@@ -82,6 +83,7 @@ class RSSJob:
                 for item in target_items.items():
                     title = item['title']
                     if match_obj := regex_pattern.match(title):
+                        latest_url = item["enclosure"]["@url"]
                         result_list.append(latest_url)
             except Exception as e:
                 raise RSSRuleFileError(
@@ -110,7 +112,7 @@ class RSSJob:
                         result.extend(torrents)
         return result
     
-    def send_task_to_qbit(self, torrent_url_lists: List[str]):
+    def send_task_to_qbit(self, torrent_url_lists: List[str]) -> List[str]:
         qbit_dir = QbitConfig['torrent_file_dir']
         os.makedirs(qbit_dir, exist_ok=True)
         
@@ -129,11 +131,16 @@ class RSSJob:
                 ofile.write(response.content)
             expected_source.append(file_path)
 
+        # [todo] clean failed-torrents
         if expected_source:
             torrent_list = [open(f, 'rb') for f in expected_source]
             media_path = QbitConfig['media_file_dir']
             qb_cli = qbittorrent.Client(QbitConfig['qbit_addr'], verify=False)
             qb_cli.download_from_file(torrent_list, savepath=media_path)
+        else:
+            LOGGER.warning(f"No new media file to download.")
+            
+        return expected_source
 
 # [todo] implement
 class CleanJob:

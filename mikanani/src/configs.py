@@ -2,7 +2,7 @@ import os
 from typing import Dict, Optional
 
 LogConfig: Dict[str, Optional[str]] = {
-    'log_dir': os.getenv('LOG_DIR', '../logs/mikanani.log'),
+    'log_dir': os.getenv('LOG_DIR', './logs'),
     'log_level': os.getenv('LOG_LEVEL', 'INFO'),
 }
 
