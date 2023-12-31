@@ -4,8 +4,11 @@ __pycache__/
 .env
 !example.env
 
-*/config/*.yaml
-*/config/*.yml
+*.yaml
+*.yml
 !example.yaml
+!example.yml
 
 *example*.json
+
+**/rabbitmq_init.py

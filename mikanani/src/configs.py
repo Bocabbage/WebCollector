@@ -20,3 +20,11 @@ ProxyConfig: dict = {
     'proxy_enable': False if os.getenv('PROXY_ENABLE', "False") == "False" else True,
     'proxy_addr': os.getenv('PROXY_ADDR'),
 }
+
+RabbitmqConfig: dict = {
+    'host': os.getenv('RABBITMQ_HOST_MKANI'),
+    'port': os.getenv('RABBITMQ_PORT_MKANI'),
+    'user': os.getenv('RABBITMQ_USER_MKANI'),
+    'pwd': os.getenv('RABBITMQ_PWD_MKANI'),
+    'queue': os.getenv('RABBITMQ_QUEUENAME_MKANI')
+}
