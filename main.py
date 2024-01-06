@@ -3,7 +3,7 @@ import asyncio
 import argparse
 from typing import List
 from mikanani.src.worker import MikanamiAnimeSubWorker
-from .common.logger import MAIN_LOGGER as mlogger
+from common.logger import MAIN_LOGGER as mlogger
 
 
 def mikanani_main(args: List[str]):
