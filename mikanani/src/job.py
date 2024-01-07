@@ -99,17 +99,22 @@ class RSSJob:
         return result_list
             
     
-    def get_torrent_urls(self) -> Optional[List[str]]:
+    def get_torrent_urls(self, input_configs: Optional[dict] = None) -> Optional[List[str]]:
         result: List[str] = list()
         
-        for rootdir, _, files in os.walk(self.config_dir):
-            for file in files:
-                if file == 'example.yaml':
-                    continue
-                with open(os.path.join(rootdir, file), 'r', encoding='utf-8') as ifile:
-                    rss_rules = yaml.safe_load(ifile)
-                    if torrents := self._get_torrent_urls(rss_rules):
-                        result.extend(torrents)
+        if input_configs is None: # direct mode
+            for rootdir, _, files in os.walk(self.config_dir):
+                for file in files:
+                    if file == 'example.yaml':
+                        continue
+                    with open(os.path.join(rootdir, file), 'r', encoding='utf-8') as ifile:
+                        rss_rules = yaml.safe_load(ifile)
+                        if torrents := self._get_torrent_urls(rss_rules):
+                            result.extend(torrents)
+        else:
+            for rss_rules in input_configs:
+                if torrents := self._get_torrent_urls(rss_rules):
+                    result.extend(torrents)
         return result
     
     def send_task_to_qbit(self, torrent_url_lists: List[str]) -> List[str]:

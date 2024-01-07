@@ -1,6 +1,9 @@
 import os
+import json
+import asyncio
 import aio_pika
 import traceback
+from typing import Optional, List
 from .configs import RabbitmqConfig
 from .job import RSSJob
 from .logger import LOGGER
@@ -23,24 +26,49 @@ class MikanamiAnimeSubWorker:
         except Exception as e:
             LOGGER.error(f"send_task_to_qbit error: exception-{e}, {traceback.format_exc()}")
     
-    async def _sqs_consume_callback(message: aio_pika.IncomingMessage):
-        pass
-    
-    async def _sqs_consume(self):
-        sqs_user = RabbitmqConfig["user"]
-        sqs_pwd = RabbitmqConfig["pwd"]
-        sqs_server = RabbitmqConfig["host"]
-        sqs_port = RabbitmqConfig["port"]
-        queue_name = RabbitmqConfig["queue"]
+    async def _sqs_consume_callback(self, message: aio_pika.IncomingMessage):
+        tlist: List[str] = list()
+        try:
+            msg_dict: Optional[dict] = json.loads(message.body)
+            # LOGGER.debug(f"msg_dict: {msg_dict}")
+            tlist = self.job_obj.get_torrent_urls(msg_dict)
+            LOGGER.info("get_torrent_urls success.")
+        except Exception as e:
+            LOGGER.error(f"get_torrent_urls error: exception-{e}, {traceback.format_exc()}")
+            # await message.reject()
+            tlist = list()
+            
+        # await message.ack()
         
-        connection_url = f"amqp:{sqs_user}:{sqs_pwd}@{sqs_server}:{sqs_port}/"
-        connection = await aio_pika.connect_robust(connection_url)        
-        channel = await connection.channel()
- 
-        queue = await channel.get_queue(queue_name)
-        # set callback
-        await queue.consume(self._sqs_consume_callback)
+        try:
+            expected_sources = self.job_obj.send_task_to_qbit(tlist)
+            LOGGER.info(f"send_task_to_qbit success, new files number: {len(expected_sources)}.")
+        except Exception as e:
+            LOGGER.error(f"send_task_to_qbit error: exception-{e}, {traceback.format_exc()}")
+    
             
     async def sqs_async_run(self):
-        await self._sqs_consume()
-        
+        try:
+            sqs_user = RabbitmqConfig["user"]
+            sqs_pwd = RabbitmqConfig["pwd"]
+            sqs_server = RabbitmqConfig["host"]
+            sqs_port = RabbitmqConfig["port"]
+            queue_name = RabbitmqConfig["queue"]
+            
+            connection_url = f"amqp://{sqs_user}:{sqs_pwd}@{sqs_server}:{sqs_port}/"
+            connection = await aio_pika.connect(connection_url)        
+            channel = await connection.channel()
+    
+            queue = await channel.get_queue(queue_name)
+            await queue.consume(self._sqs_consume_callback, no_ack=True)
+
+            LOGGER.info("Start rabbitmq serve: press Ctrl+c to stop.")
+            await asyncio.Future()
+
+        except asyncio.CancelledError:
+            LOGGER.info("sqs_async_func() has been cancelled.")
+            await channel.close()
+            await connection.close()
+            LOGGER.info("rabbitmq channel/conn closed.")
+            # raise
+
