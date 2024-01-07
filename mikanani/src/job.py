@@ -140,7 +140,9 @@ class RSSJob:
         if expected_source:
             torrent_list = [open(f, 'rb') for f in expected_source]
             media_path = QbitConfig['media_file_dir']
-            qb_cli = qbittorrent.Client(QbitConfig['qbit_addr'], verify=False)
+            qb_cli = qbittorrent.Client(QbitConfig['qbit_addr'])
+            res = qb_cli.login(username=QbitConfig['username'], password=QbitConfig['password'])
+            LOGGER.debug(f"login status: {res}")
             qb_cli.download_from_file(torrent_list, savepath=media_path)
         else:
             LOGGER.warning(f"No new media file to download.")

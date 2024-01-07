@@ -30,6 +30,12 @@ data_to_send = [
         "rule_version": "latest",
         "rule_regex": '\[ANi\].*?(\d+) \[1080P\]\[Baha.*',
         
+    },
+    {
+        "name": "hoshikuzu_telepath",
+        "rss_url": "https://mikanani.me/RSS/Bangumi?bangumiId=3144&subgroupid=370",
+        "rule_version": "latest",
+        "rule_regex": '\[喵萌奶茶屋&LoliHouse\].*?(\d+) \[WebRip.*',
     }
 ]
 json_message = json.dumps(data_to_send)

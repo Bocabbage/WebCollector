@@ -13,7 +13,9 @@ RSSConfig: Dict[str, str] = {
 QbitConfig: Dict[str, str] = {
     'qbit_addr': os.getenv('QBIT_ADDR'),
     'torrent_file_dir': os.getenv('TORRENT_FILE_DIR', './'),
-    'media_file_dir': os.getenv('MEDIA_FILE_DIR', './')
+    'media_file_dir': os.getenv('MEDIA_FILE_DIR', './'),
+    'username': os.getenv('QBIT_USER'),
+    'password': os.getenv('QBIT_PWD'),
 }
 
 ProxyConfig: dict = {
