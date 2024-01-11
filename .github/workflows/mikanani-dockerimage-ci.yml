@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 env:
-  IMAGE_NAME: "Mikanani-sqsMode"
+  IMAGE_NAME: "mikanani-sqsmode"
 
 jobs:
 
