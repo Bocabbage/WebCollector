@@ -1,0 +1,26 @@
+name: Mikanani Docker Image Build & Publish
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  IMAGE_NAME: "Mikanani-sqsMode"
+
+jobs:
+
+  build-docker-image-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v3
+
+    - name: Login to Docker hub
+      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+    - name: Build the Docker image
+      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest .
+      
+    - name: Push to Docker hub
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
