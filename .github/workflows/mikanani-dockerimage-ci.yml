@@ -1,11 +1,15 @@
-name: Mikanani Docker Image Build & Publish
+name: Docker Image Build & Publish
+run-name: Build ${{ github.event.inputs.module }} Image
 
 on:
-  push:
-    branches: [ "main" ]
-
-env:
-  IMAGE_NAME: "mikanani-sqsmode"
+  workflow_dispatch:
+    inputs:
+      module:
+        type: choice
+        description: module
+        options:
+          - Mikanani-sqs
+        required: true
 
 jobs:
 
@@ -14,13 +18,19 @@ jobs:
 
     steps:
     - name: Check out the repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Login to Docker hub
       run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-    - name: Build the Docker image
-      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest .
-      
-    - name: Push to Docker hub
-      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+    - name: Build & Push Docker image
+      run: |
+        image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
+        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/$image_name:${{ steps.tag_version.outputs.new_tag }} .
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/$image_name:${{ steps.tag_version.outputs.new_tag }}
