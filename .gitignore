@@ -5,10 +5,10 @@ __pycache__/
 .env
 !example.env
 
-*.yaml
-*.yml
-!example.yaml
-!example.yml
+# *.yaml
+# *.yml
+# !example.yaml
+# !example.yml
 
 *example*.json
 

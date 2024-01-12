@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mikanani-dispatcher
+  namespace: web-general
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: mikanani-dispatcher
+            image: bocabbage/<MikananiImage>
+            envFrom:
+            - secretRef:
+                name: mikanani-config
+            command: ["python"]
+            args: ["main.py", "mikanani", "--mode", "sqs-dispatch"]
+            resources:
+              limits:
+                memory: "128Mi"
+                cpu: "50m"

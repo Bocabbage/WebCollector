@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mikanani-worker
+  namespace: web-general
+spec:
+  replica: 1
+  selector:
+    matchLabels:
+      app: mikanani-worker
+      feature: worker
+  template:
+    metadata:
+      labels:
+        app: mikanani-worker
+        feature: worker
+    spec:
+      containers:
+      - name: mikanani-worker
+        image: bocabbage/<MikananiImage>
+        envFrom:
+        - secretRef:
+          name: mikanani-config
+        command: ["python"]
+        args: ["main.py", "mikanani", "--mode", "sqs-worker"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"

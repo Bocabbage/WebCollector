@@ -5,6 +5,7 @@ import argparse
 from typing import List
 from mikanani.src import configs
 from mikanani.src.worker import MikanamiAnimeSubWorker
+from mikanani.src.dispatcher import MikanamiAnimeDispatcher
 from common.logger import MAIN_LOGGER as mlogger
 
 def signal_handler(task: asyncio.Task, sig, frame):
@@ -35,8 +36,10 @@ def mikanani_main(args: List[str]):
     
     if args.mode == "direct":
         MikanamiAnimeSubWorker().run()
-    elif args.mode == "sqs":
+    elif args.mode == "sqs-worker":
         asyncio.run(_mikanani_async_main())
+    elif args.mode == "sqs-dispatch":
+        MikanamiAnimeDispatcher().sqs_dispatch()
 
 
 if __name__ == '__main__':
