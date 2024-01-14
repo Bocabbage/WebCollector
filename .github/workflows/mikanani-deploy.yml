@@ -27,7 +27,7 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-    - name: Build & Push Docker image
+    - name: Build Docker image
       run: |
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest .
@@ -37,11 +37,11 @@ jobs:
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         image="${image_name}:latest"
         repo="${{ secrets.DOCKER_HUB_USERNAME }}\/${{ secrets.DOCKER_HUB_REPO }}"
-        sed -i "s/<DOCKER_HUB_REPO>\/${repo}/g" ./kubernetes/mikanani/worker.yaml
-        sed -i "s/<MikananiImage>\/${image}/g" ./kubernetes/mikanani/worker.yaml
+        sed -i "s/<DOCKER_HUB_REPO>/${repo}/g" ./kubernetes/mikanani/worker.yaml
+        sed -i "s/<MikananiImage>/${image}/g" ./kubernetes/mikanani/worker.yaml
 
-        sed -i "s/<DOCKER_HUB_REPO>\/${repo}/g" ./kubernetes/mikanani/dispatcher.yaml
-        sed -i "s/<MikananiImage>\/${image}/g" ./kubernetes/mikanani/dispatcher.yaml
+        sed -i "s/<DOCKER_HUB_REPO>/${repo}/g" ./kubernetes/mikanani/dispatcher.yaml
+        sed -i "s/<MikananiImage>/${image}/g" ./kubernetes/mikanani/dispatcher.yaml
 
         case "${{ github.event.inputs.submodule }}" in
         "worker")
