@@ -1,0 +1,4 @@
+name: dungeon_meshi
+rss_url: 'https://mikanani.me/RSS/Bangumi?bangumiId=3240&subgroupid=382'
+rule_version: latest
+rule_regex: '【喵萌奶茶屋】★01月新番★\[迷宫饭 / Dungeon Meshi / Delicious in Dungeon\]\[(\d+)\]\[1080p\]\[简日双语\].*'

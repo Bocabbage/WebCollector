@@ -4,7 +4,7 @@ metadata:
   name: mikanani-worker
   namespace: web-general
 spec:
-  replica: 1
+  replicas: 1
   selector:
     matchLabels:
       app: mikanani-worker
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: mikanani-worker
-        image: bocabbage/<MikananiImage>
+        image: bocabbage/<DOCKER_HUB_REPO>/<MikananiImage>
         envFrom:
         - secretRef:
           name: mikanani-config

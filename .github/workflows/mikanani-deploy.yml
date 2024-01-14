@@ -1,0 +1,68 @@
+name: Mikanani Deployment
+run-name: Deploy ${{ github.event.inputs.module }}-${{ github.event.inputs.submodule }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        type: choice
+        description: module
+        options:
+          - Mikanani-sqs
+        required: true
+      submodule:
+        type: choice
+        description: worker/dispatcher/all
+        options:
+          - worker
+          - dispatcher
+          - all
+        required: true
+jobs:
+
+  build-docker-image-and-publish:
+    runs-on: bocabbage-mate14
+
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v4
+
+
+    - name: Login to Docker hub
+      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+    - name: Build & Push Docker image
+      run: |
+        image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
+        docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest .
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest
+      
+    - name: Deploy on Kubernetes
+      run: |
+        image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
+        image="${image_name}:latest"
+        repo="${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}"
+        sed -i "s/<DOCKER_HUB_REPO>/${repo}/g" ./kubernetes/mikanani/worker.yaml
+        sed -i "s/<MikananiImage>/${image}/g" ./kubernetes/mikanani/worker.yaml
+
+        sed -i "s/<DOCKER_HUB_REPO>/${repo}/g" ./kubernetes/mikanani/dispatcher.yaml
+        sed -i "s/<MikananiImage>/${image}/g" ./kubernetes/mikanani/dispatcher.yaml
+
+        case "${{ github.event.inputs.submodule }}" in
+        "worker")
+        echo "Deploy worker only..."
+        sudo kubectl apply -f ./kubernetes/mikanani/worker.yaml
+        ;;
+        "dispatcher")
+        echo "Deploy dispatcher only..."
+        sudo kubectl apply -f ./kubernetes/mikanani/dispatcher.yaml
+        ;;
+        "all")
+        echo "Deploy both worker and dispatcher..."
+        sudo kubectl apply -f ./kubernetes/mikanani/worker.yaml
+        sudo kubectl apply -f ./kubernetes/mikanani/dispatcher.yaml
+    
+    - name: Clean the Docker image
+      run: |
+        image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
+        docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:${{ steps.tag_version.outputs.new_tag }}
