@@ -26,9 +26,10 @@ ProxyConfig: dict = {
 }
 
 RabbitmqConfig: dict = {
-    'host': os.getenv('RABBITMQ_HOST_MKANI'),
-    'port': os.getenv('RABBITMQ_PORT_MKANI'),
+    'host': os.getenv('KAPIBARA_RABBITMQ_SVC_SERVICE_HOST', os.getenv('RABBITMQ_HOST_MKANI')),
+    'port': os.getenv('KAPIBARA_RABBITMQ_SVC_SERVICE_PORT', os.getenv('RABBITMQ_PORT_MKANI')),
     'user': os.getenv('RABBITMQ_USER_MKANI'),
     'pwd': os.getenv('RABBITMQ_PWD_MKANI'),
-    'queue': os.getenv('RABBITMQ_QUEUENAME_MKANI')
+    'queue': os.getenv('RABBITMQ_QUEUENAME_MKANI'),
+    'routing_key': os.getenv('RABBITMQ_ROUTING_KEY')
 }
