@@ -23,6 +23,7 @@ QbitConfig: Dict[str, str] = {
 ProxyConfig: dict = {
     'proxy_enable': False if os.getenv('PROXY_ENABLE', "False") == "False" else True,
     'proxy_addr': os.getenv('PROXY_ADDR'),
+    'proxy_port': os.getenv('PROXY_PORT')
 }
 
 RabbitmqConfig: dict = {

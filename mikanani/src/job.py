@@ -26,8 +26,8 @@ class RSSJob:
         self.proxies = None
         if ProxyConfig['proxy_enable']:
             self.proxies = {
-                'http': 'http://' + ProxyConfig['proxy_addr'],
-                'https': 'http://' + ProxyConfig['proxy_addr'],
+                'http': f"http://{ProxyConfig['proxy_addr']}:{ProxyConfig['proxy_port']}",
+                'https': f"http://{ProxyConfig['proxy_addr']}:{ProxyConfig['proxy_port']}",
             }
         
     def _get_torrent_urls(self, rss_rules: dict) -> List[str]:
