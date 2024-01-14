@@ -20,7 +20,7 @@ spec:
         image: bocabbage/<DOCKER_HUB_REPO>/<MikananiImage>
         envFrom:
         - secretRef:
-          name: mikanani-config
+            name: mikanani-config
         command: ["python"]
         args: ["main.py", "mikanani", "--mode", "sqs-worker"]
         resources:
