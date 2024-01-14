@@ -32,5 +32,5 @@ jobs:
     - name: Build & Push Docker image
       run: |
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
-        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/$image_name:${{ steps.tag_version.outputs.new_tag }} .
+        docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/$image_name:${{ steps.tag_version.outputs.new_tag }} .
         docker push ${{ secrets.DOCKER_HUB_USERNAME }}/$image_name:${{ steps.tag_version.outputs.new_tag }}
