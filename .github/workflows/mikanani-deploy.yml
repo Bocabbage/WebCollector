@@ -46,16 +46,16 @@ jobs:
         case "${{ github.event.inputs.submodule }}" in
         "worker")
         echo "Deploy worker only..."
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./kubernetes/mikanani/worker.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
         ;;
         "dispatcher")
         echo "Deploy dispatcher only..."
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./kubernetes/mikanani/dispatcher.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/dispatcher.yaml
         ;;
         "all")
         echo "Deploy both worker and dispatcher..."
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./kubernetes/mikanani/worker.yaml
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./kubernetes/mikanani/dispatcher.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/dispatcher.yaml
     
     - name: Clean the Docker image
       run: |
