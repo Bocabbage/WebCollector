@@ -56,7 +56,8 @@ jobs:
         echo "Deploy both worker and dispatcher..."
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/dispatcher.yaml
-    
+        ;;
+        esac
     - name: Clean the Docker image
       run: |
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
