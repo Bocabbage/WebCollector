@@ -43,6 +43,7 @@ def mikanani_main(args: List[str]):
 
 
 if __name__ == '__main__':
+    mlogger.info(f"mikanani env load test: test-env-log={configs.TestConfig}")
     args = sys.argv[1:]
     if args[0] == 'mikanani':
         mikanani_main(args[1:])

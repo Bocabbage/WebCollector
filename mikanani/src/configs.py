@@ -1,6 +1,8 @@
 import os
 from typing import Dict, Optional
 
+TestConfig: str = os.getenv('TESTCONFIG')
+
 LogConfig: Dict[str, Optional[str]] = {
     'log_dir': os.getenv('LOG_DIR', './logs'),
     'log_level': os.getenv('LOG_LEVEL', 'INFO'),
