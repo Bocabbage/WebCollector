@@ -21,7 +21,7 @@ on:
 jobs:
 
   build-docker-image-and-publish:
-    runs-on: [self-hosted, linux, x64, bocabbage-mate14]
+    runs-on: self-hosted
 
     steps:
     - name: Check out the repo
