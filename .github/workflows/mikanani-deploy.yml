@@ -58,7 +58,3 @@ jobs:
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/dispatcher.yaml
         ;;
         esac
-    - name: Clean the Docker image
-      run: |
-        image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
-        docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:${{ steps.tag_version.outputs.new_tag }}
