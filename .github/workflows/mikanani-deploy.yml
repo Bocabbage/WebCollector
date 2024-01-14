@@ -27,12 +27,9 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-
-    - name: Login to Docker hub
-      run: echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
-
     - name: Build & Push Docker image
       run: |
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest .
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest
