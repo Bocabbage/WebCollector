@@ -27,38 +27,37 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-    - name: Build & Push Docker image
+    - name: Build Docker image
       run: |
-        echo $USER
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest .
+        export KUBECONFIG=$HOME/.kube/config
+        docker save ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest | k3s ctr images import -
+        docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest
       
     - name: Deploy on Kubernetes
       run: |
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         image="${image_name}:latest"
-        repo="${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}"
-        sed -i "s/<DOCKER_HUB_REPO>/${repo}/g" ./kubernetes/mikanani/worker.yaml
-        sed -i "s/<MikananiImage>/${image}/g" ./kubernetes/mikanani/worker.yaml
+        repo="${{ secrets.DOCKER_HUB_USERNAME }}\/${{ secrets.DOCKER_HUB_REPO }}"
+        sed -i "s/<DOCKER_HUB_REPO>/${repo}/g" ./deployments/kubernetes/mikanani/worker.yaml
+        sed -i "s/<MikananiImage>/${image}/g" ./deployments/kubernetes/mikanani/worker.yaml
 
-        sed -i "s/<DOCKER_HUB_REPO>/${repo}/g" ./kubernetes/mikanani/dispatcher.yaml
-        sed -i "s/<MikananiImage>/${image}/g" ./kubernetes/mikanani/dispatcher.yaml
+        sed -i "s/<DOCKER_HUB_REPO>/${repo}/g" ./deployments/kubernetes/mikanani/dispatcher.yaml
+        sed -i "s/<MikananiImage>/${image}/g" ./deployments/kubernetes/mikanani/dispatcher.yaml
 
         case "${{ github.event.inputs.submodule }}" in
         "worker")
         echo "Deploy worker only..."
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./kubernetes/mikanani/worker.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
         ;;
         "dispatcher")
         echo "Deploy dispatcher only..."
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./kubernetes/mikanani/dispatcher.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/dispatcher.yaml
         ;;
         "all")
         echo "Deploy both worker and dispatcher..."
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./kubernetes/mikanani/worker.yaml
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./kubernetes/mikanani/dispatcher.yaml
-    
-    - name: Clean the Docker image
-      run: |
-        image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
-        docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:${{ steps.tag_version.outputs.new_tag }}
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/dispatcher.yaml
+        ;;
+        esac

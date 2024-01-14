@@ -12,7 +12,8 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: mikanani-dispatcher
-            image: bocabbage/<DOCKER_HUB_REPO>/<MikananiImage>
+            image: <DOCKER_HUB_REPO>/<MikananiImage>
+            imagePullPolicy: Never
             envFrom:
             - secretRef:
                 name: mikanani-config

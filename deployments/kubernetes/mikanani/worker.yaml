@@ -17,10 +17,11 @@ spec:
     spec:
       containers:
       - name: mikanani-worker
-        image: bocabbage/<DOCKER_HUB_REPO>/<MikananiImage>
+        image: <DOCKER_HUB_REPO>/<MikananiImage>
+        imagePullPolicy: Never
         envFrom:
         - secretRef:
-          name: mikanani-config
+            name: mikanani-config
         command: ["python"]
         args: ["main.py", "mikanani", "--mode", "sqs-worker"]
         resources:
