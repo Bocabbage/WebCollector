@@ -31,6 +31,8 @@ jobs:
       run: |
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest .
+        docker save ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest | k3s ctr images import -
+        docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/$image_name:latest
       
     - name: Deploy on Kubernetes
       run: |
