@@ -29,7 +29,7 @@ jobs:
 
 
     - name: Login to Docker hub
-      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | (echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin)
+      run: echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
 
     - name: Build & Push Docker image
       run: |
