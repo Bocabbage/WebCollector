@@ -19,6 +19,13 @@ spec:
       - name: mikanani-worker
         image: <DOCKER_HUB_REPO>/<MikananiImage>
         imagePullPolicy: Never
+        env:
+        - name: HTTP_PROXY
+          value: "http://<node-ip>:<proxy-port>"
+        - name: HTTPS_PROXY
+          value: "http://<node-ip>:<proxy-port>"
+        - name: NO_PROXY
+          value: "localhost,127.0.0.1"
         envFrom:
         - secretRef:
             name: mikanani-config
