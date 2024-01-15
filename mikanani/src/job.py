@@ -46,12 +46,16 @@ class RSSJob:
         
         # Get rss-xml
         rss_xml_dict = dict()
-        response = requests.get(rss_url, proxies=self.proxies)
-        if response.status_code != 200:
-            raise RSSRuleFileError(
-                message=f"{RSSRuleFileErrCode.RSS_XML_REQUEST_ERROR.name}: request error code={response.status_code}",
-                error_code=RSSRuleFileErrCode.RSS_XML_REQUEST_ERROR.value
-            )
+        try:
+            response = requests.get(rss_url, proxies=self.proxies)
+            if response.status_code != 200:
+                raise RSSRuleFileError(
+                    message=f"{RSSRuleFileErrCode.RSS_XML_REQUEST_ERROR.name}: request error code={response.status_code}",
+                    error_code=RSSRuleFileErrCode.RSS_XML_REQUEST_ERROR.value
+                )
+        except Exception as e:
+            LOGGER.error(f"request error for rss_url: {rss_url}, proxies={self.proxies}")
+            raise
         rss_xml_dict = xmltodict.parse(response.text)
         regex_pattern = re.compile(rule_regex)
         if rule_version == 'latest':
