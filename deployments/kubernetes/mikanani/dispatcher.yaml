@@ -4,7 +4,7 @@ metadata:
   name: mikanani-dispatcher
   namespace: web-general
 spec:
-  schedule: "0 0 * * *"
+  schedule: "0 2 * * *"
   jobTemplate:
     spec:
       template:

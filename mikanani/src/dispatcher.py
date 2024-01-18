@@ -19,10 +19,10 @@ class MikanamiAnimeDispatcher:
 
         data_to_send = [
             {
-                "name": "kusuriya_no_hitorigoto",
-                "rss_url": "https://mikanani.me/RSS/Bangumi?bangumiId=3203&subgroupid=370",
+                "name": "sousou_no_frieren",
+                "rss_url": 'https://mikanani.me/RSS/Bangumi?bangumiId=3141&subgroupid=583',
                 "rule_version": "latest",
-                "rule_regex": '\[喵萌奶茶屋\&LoliHouse\].*?Kusuriya no Hitorigoto - (\d+).*',
+                "rule_regex": '\[ANi\]\s+.*?\s+/\s+葬送的芙莉莲\s+-\s+(\d+)\s+\[1080P\]\[Baha\].*',
             },
             {
                 "name": "dungeon_meshi",
