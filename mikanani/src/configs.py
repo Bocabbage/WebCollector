@@ -23,7 +23,7 @@ QbitConfig: Dict[str, str] = {
 ProxyConfig: dict = {
     'proxy_enable': False if os.getenv('PROXY_ENABLE', "False") == "False" else True,
     'proxy_addr': os.getenv('PROXY_ADDR'),
-    'proxy_port': os.getenv('PROXY_PORT')
+    'proxy_port': os.getenv('PROXY_PORT'),
 }
 
 RabbitmqConfig: dict = {
@@ -32,5 +32,11 @@ RabbitmqConfig: dict = {
     'user': os.getenv('RABBITMQ_USER_MKANI'),
     'pwd': os.getenv('RABBITMQ_PWD_MKANI'),
     'queue': os.getenv('RABBITMQ_QUEUENAME_MKANI'),
-    'routing_key': os.getenv('RABBITMQ_ROUTING_KEY')
+    'routing_key': os.getenv('RABBITMQ_ROUTING_KEY'),
+}
+
+MongoDBConfig: dict = {
+    'host': os.getenv('KAPIBARA_MONGODB_SVC_URL'),
+    'mikandb': os.getenv('KAPIBARA_MONGODB_MIKANDB'),
+    'mikancollection': os.getenv('KAPIBARA_MONGODB_MIKANCOLLECTION'),
 }
