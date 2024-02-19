@@ -10,7 +10,7 @@ class MikanamiAnimeDispatcher:
         mongo_db = mongo_client[MongoDBConfig['mikandb']]
         mongo_col = mongo_db[MongoDBConfig['mikancollection']]
 
-        query = { "isActive": "True" }
+        query = { "isActive": True }
 
         data_to_send = [
             # {
