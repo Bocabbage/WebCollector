@@ -5,7 +5,10 @@ import traceback
 import requests
 import yaml
 import qbittorrent
-import base64
+from requests import Session
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
+# import base64
 from typing import Optional, List
 from .configs import ProxyConfig, QbitConfig
 from .logger import LOGGER
@@ -47,7 +50,17 @@ class RSSJob:
         # Get rss-xml
         rss_xml_dict = dict()
         try:
-            response = requests.get(rss_url, proxies=self.proxies)
+            rss_session = Session()
+
+            retries = Retry(
+                total=5,
+                backoff_factor=1,
+                status_forcelist=[502, 503, 504],
+                allowed_methods={'GET'},
+            )
+            rss_session.mount("https://", HTTPAdapter(retries=retries))
+
+            response = rss_session.get(rss_url, proxies=self.proxies, timeout=60)
             if response.status_code != 200:
                 raise RSSRuleFileError(
                     message=f"{RSSRuleFileErrCode.RSS_XML_REQUEST_ERROR.name}: request error code={response.status_code}",
