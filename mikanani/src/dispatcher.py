@@ -39,7 +39,7 @@ class MikanamiAnimeDispatcher:
 
         channel = connection.channel()
 
-        json_message = json.dumps(data_to_send)
+        json_message = json.dumps(data_to_send, ensure_ascii=False)
         channel.basic_publish(exchange="mikanani-direct-ex",
                             routing_key="mikanani-subanime-download",
                             body=json_message)
