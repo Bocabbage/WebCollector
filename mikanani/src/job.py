@@ -58,7 +58,7 @@ class RSSJob:
                 status_forcelist=[502, 503, 504],
                 allowed_methods={'GET'},
             )
-            rss_session.mount("https://", HTTPAdapter(retries=retries))
+            rss_session.mount("https://", HTTPAdapter(max_retries=retries))
 
             response = rss_session.get(rss_url, proxies=self.proxies, timeout=60)
             if response.status_code != 200:
