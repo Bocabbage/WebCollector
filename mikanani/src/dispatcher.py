@@ -25,7 +25,7 @@ class MikanamiAnimeDispatcher:
             #     "rule_version": "latest",
             #     "rule_regex": '【喵萌奶茶屋】★01月新番★\[迷宫饭 / Dungeon Meshi / Delicious in Dungeon\]\[(\d+)\]\[1080p\]\[简日双语\].*',
             # }
-            x for x in mongo_col.find(query)
+            x for x in mongo_col.find(query, {"_id": 0})
         ]
 
         credentials = pika.PlainCredentials(username=RabbitmqConfig['user'], password=RabbitmqConfig['pwd'])
