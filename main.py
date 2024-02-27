@@ -4,25 +4,32 @@ import asyncio
 import argparse
 from typing import List
 from mikanani.src import configs
-from mikanani.src.worker import MikanamiAnimeSubWorker
+from mikanani.src.worker import MikanamiAnimeSubWorker, MongoDBOpsWorker
 from mikanani.src.dispatcher import MikanamiAnimeDispatcher
 from common.logger import MAIN_LOGGER as mlogger
 
-def signal_handler(task: asyncio.Task, sig, frame):
+def signal_handler(tasks: List[asyncio.Task], sig, frame):
     # [Attention] 
     # Don't use the try-catch KeyboardInterrupt method to cancel the task
     # because the inner logic of aio_pika will probably catch it
     # and then cause problem-crash.
-    mlogger.info(f"Received signal {sig}, cancel task {task}")
-    task.cancel()
-    mlogger.info(f"task {task} cancelled.")
+    mlogger.info(f"Received signal {sig}, cancel tasks")
+    for task in tasks:
+        task.cancel()
+        mlogger.info(f"task {task} cancelled.")
+    mlogger.info("all tasks cancelled.")
 
 async def _mikanani_async_main():
     try:
-        task = asyncio.create_task(MikanamiAnimeSubWorker().sqs_async_run())
-        signal.signal(signal.SIGINT, lambda sig, frame: signal_handler(task, sig, frame))
+        tasks = [
+            MikanamiAnimeSubWorker().sqs_async_run(), # mikanani-parse-and-send worker
+            MongoDBOpsWorker().grpc_server(),         # mongodb-crud grpc server
+        ]
+        tasks = [ asyncio.create_task(x) for x in tasks ]
+
+        signal.signal(signal.SIGINT, lambda sig, frame: signal_handler(tasks, sig, frame))
         mlogger.info("mikanani sqs_async_run: start")
-        await task
+        await asyncio.gather(*tasks)
     except Exception as e:
         mlogger.info(f"Exception {e} happened.")
     finally:

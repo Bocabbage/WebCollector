@@ -72,3 +72,13 @@ class MikanamiAnimeSubWorker:
             LOGGER.info("rabbitmq channel/conn closed.")
             # raise
 
+
+class MongoDBOpsWorker:
+    # TODO: impl
+    def __init__(self):
+        pass
+    async def grpc_server(self):
+        try:
+            pass
+        except asyncio.CancelledError:
+            LOGGER.info("mongodb grpc server has been cancelled.")
