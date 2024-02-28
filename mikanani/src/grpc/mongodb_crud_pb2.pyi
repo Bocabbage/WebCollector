@@ -6,10 +6,12 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Optional as _Op
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class QueryAnimeRequest(_message.Message):
-    __slots__ = ("names",)
+    __slots__ = ("activeType", "names")
+    ACTIVETYPE_FIELD_NUMBER: _ClassVar[int]
     NAMES_FIELD_NUMBER: _ClassVar[int]
+    activeType: int
     names: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, names: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, activeType: _Optional[int] = ..., names: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class QueryAnimeResponse(_message.Message):
     __slots__ = ("names", "rssUrl")

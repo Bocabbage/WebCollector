@@ -8,7 +8,8 @@ service MikananiMongoCrud {
 
 // Query anime configurations
 message QueryAnimeRequest {
-    repeated string names = 1; // if ['*'], return the whole list
+    int32 activeType = 1;
+    repeated string names = 2; // if ['*'], return the whole list
 }
 
 message QueryAnimeResponse {
