@@ -3,6 +3,8 @@ import json
 import asyncio
 import aio_pika
 import traceback
+import grpc
+from .grpc_utils import mongodb_crud_pb2_grpc, mongodb_crud
 from typing import Optional, List
 from .configs import RabbitmqConfig
 from .job import RSSJob
@@ -75,10 +77,20 @@ class MikanamiAnimeSubWorker:
 
 class MongoDBOpsWorker:
     # TODO: impl
-    def __init__(self):
-        pass
+    def __init__(self, listen_addr: str = "[::]:50051"):
+        self.listen_addr = listen_addr
+
     async def grpc_server(self):
         try:
-            pass
+            server = grpc.aio.server()
+            mongodb_crud_pb2_grpc.add_MikananiMongoCrudServicer_to_server(
+                mongodb_crud.MikananiMongoDBCrud(),
+                server,
+            )
+            server.add_insecure_port(self.listen_addr)
+            LOGGER.info(f"mongodb grpc server: start serve at {self.listen_addr}")
+            await server.start()
+            await server.wait_for_termination()
         except asyncio.CancelledError:
             LOGGER.info("mongodb grpc server has been cancelled.")
+            await server.stop(0)
