@@ -36,7 +36,7 @@ class MikananiMongoDBCrud(MikananiMongoCrudServicer):
             2: { "isActive": False }    # Only inactive
         }
 
-        names: List[str] = request.names
+        names = request.names
         active_type: int = request.activeType
 
         if (not names or 
@@ -61,7 +61,7 @@ class MikananiMongoDBCrud(MikananiMongoCrudServicer):
 
         try:
             mongo_col = self._get_col_cursor()
-            result = [x for x in mongo_col.find(query)]
+            result = [x for x in mongo_col.find(query, {"_id": 0})]
         except Exception as e:
             LOGGER.error(f"[QueryAnime][querymongo] exception-{e}: {traceback.format_exc()}")
             context.set_code(gRPCStatusCode.INTERNAL)
@@ -69,22 +69,20 @@ class MikananiMongoDBCrud(MikananiMongoCrudServicer):
             return QueryAnimeResponse()
 
         return QueryAnimeResponse(
-            ids=[int(x["_id"]) for x in result],
             names=[x["name"] for x in result],
             rssUrl=[x["rss_url"] for x in result],
         )
 
 
     async def UpdateAnime(self, request: UpdateAnimeRequest, context: ServicerContext):
-        ids: List[int] = request.ids
-        names: List[str] = request.names
-        rssUrls: List[str] = request.rssUrls
-        rssVersions: List[str] = request.rssVersions
-        rssRegexs: List[str] = request.rssRegexs
-        isActives: List[bool] = request.isActives
+        names = request.names
+        rssUrls = request.rssUrls
+        ruleVersions = request.ruleVersions
+        ruleRegexs = request.ruleRegexs
+        isActives = request.isActives
 
-        doc_num = len(ids)
-        for x in [names, rssUrls, rssVersions, rssRegexs, isActives]:
+        doc_num = len(names)
+        for x in [rssUrls, ruleVersions, ruleRegexs, isActives]:
             if len(x) != doc_num:
                 context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
                 context.set_details("params num not consistent.")
@@ -94,15 +92,15 @@ class MikananiMongoDBCrud(MikananiMongoCrudServicer):
 
         try:
             mongo_col = self._get_col_cursor()
-            for idx, id in enumerate(ids):
+            for idx, name in enumerate(names):
                 result = mongo_col.update_one(
-                    {"_id": ObjectId(id)},
+                    {"name": name},
                     {
                         "$set": {
-                            "name": names[idx],
-                            "rssUrl": rssUrls[idx],
-                            "rssVersion": rssVersions[idx],
-                            "rssRegex": rssRegexs[idx],
+                            "name": name,
+                            "rss_url": rssUrls[idx],
+                            "rule_version": ruleVersions[idx],
+                            "rule_regex": ruleRegexs[idx],
                             "isActive": isActives[idx],
                         }
                     },
@@ -126,7 +124,7 @@ class MikananiMongoDBCrud(MikananiMongoCrudServicer):
 
     async def DelAnime(self, request: DelAnimeRequest, context: ServicerContext) -> DelAnimeResponse:
         delAll: bool = request.delAll
-        ids: List[int] = request.ids
+        names: List[str] = list(request.names)
         successCount = 0
 
         try:
@@ -134,7 +132,7 @@ class MikananiMongoDBCrud(MikananiMongoCrudServicer):
             if delAll:
                 successCount = mongo_col.delete_many({}).deleted_count
             else:
-                successCount = mongo_col.delete_many({ "_id": { "$in": [ObjectId(x) for x in ids] } })
+                successCount = mongo_col.delete_many({ "name": { "$in": names } }).deleted_count
         except Exception as e:
             LOGGER.error(f"[DelAnime][del] exception-{e}: {traceback.format_exc()}")
             context.set_code(gRPCStatusCode.INTERNAL)

@@ -13,18 +13,16 @@ message QueryAnimeRequest {
 }
 
 message QueryAnimeResponse {
-    repeated int64 ids = 1;
     repeated string names = 2;
     repeated string rssUrl = 3;
 }
 
 // Add/Modify anime configurations
 message UpdateAnimeRequest {
-    repeated int64 ids = 1;
     repeated string names = 2;
     repeated string rssUrls = 3;
-    repeated string rssVersions = 4;
-    repeated string rssRegexs = 5;
+    repeated string ruleVersions = 4;
+    repeated string ruleRegexs = 5;
     repeated bool isActives = 6;
 }
 
@@ -36,7 +34,7 @@ message UpdateAnimeResponse {
 // Delete anime configurations
 message DelAnimeRequest {
     bool delAll = 1;
-    repeated int64 ids = 2;
+    repeated string names = 2;
 }
 
 message DelAnimeResponse {

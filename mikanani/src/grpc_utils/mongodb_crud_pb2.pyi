@@ -14,30 +14,26 @@ class QueryAnimeRequest(_message.Message):
     def __init__(self, activeType: _Optional[int] = ..., names: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class QueryAnimeResponse(_message.Message):
-    __slots__ = ("ids", "names", "rssUrl")
-    IDS_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("names", "rssUrl")
     NAMES_FIELD_NUMBER: _ClassVar[int]
     RSSURL_FIELD_NUMBER: _ClassVar[int]
-    ids: _containers.RepeatedScalarFieldContainer[int]
     names: _containers.RepeatedScalarFieldContainer[str]
     rssUrl: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, ids: _Optional[_Iterable[int]] = ..., names: _Optional[_Iterable[str]] = ..., rssUrl: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, names: _Optional[_Iterable[str]] = ..., rssUrl: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class UpdateAnimeRequest(_message.Message):
-    __slots__ = ("ids", "names", "rssUrls", "rssVersions", "rssRegexs", "isActives")
-    IDS_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("names", "rssUrls", "ruleVersions", "ruleRegexs", "isActives")
     NAMES_FIELD_NUMBER: _ClassVar[int]
     RSSURLS_FIELD_NUMBER: _ClassVar[int]
-    RSSVERSIONS_FIELD_NUMBER: _ClassVar[int]
-    RSSREGEXS_FIELD_NUMBER: _ClassVar[int]
+    RULEVERSIONS_FIELD_NUMBER: _ClassVar[int]
+    RULEREGEXS_FIELD_NUMBER: _ClassVar[int]
     ISACTIVES_FIELD_NUMBER: _ClassVar[int]
-    ids: _containers.RepeatedScalarFieldContainer[int]
     names: _containers.RepeatedScalarFieldContainer[str]
     rssUrls: _containers.RepeatedScalarFieldContainer[str]
-    rssVersions: _containers.RepeatedScalarFieldContainer[str]
-    rssRegexs: _containers.RepeatedScalarFieldContainer[str]
+    ruleVersions: _containers.RepeatedScalarFieldContainer[str]
+    ruleRegexs: _containers.RepeatedScalarFieldContainer[str]
     isActives: _containers.RepeatedScalarFieldContainer[bool]
-    def __init__(self, ids: _Optional[_Iterable[int]] = ..., names: _Optional[_Iterable[str]] = ..., rssUrls: _Optional[_Iterable[str]] = ..., rssVersions: _Optional[_Iterable[str]] = ..., rssRegexs: _Optional[_Iterable[str]] = ..., isActives: _Optional[_Iterable[bool]] = ...) -> None: ...
+    def __init__(self, names: _Optional[_Iterable[str]] = ..., rssUrls: _Optional[_Iterable[str]] = ..., ruleVersions: _Optional[_Iterable[str]] = ..., ruleRegexs: _Optional[_Iterable[str]] = ..., isActives: _Optional[_Iterable[bool]] = ...) -> None: ...
 
 class UpdateAnimeResponse(_message.Message):
     __slots__ = ("successCount", "failedList")
@@ -48,12 +44,12 @@ class UpdateAnimeResponse(_message.Message):
     def __init__(self, successCount: _Optional[int] = ..., failedList: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class DelAnimeRequest(_message.Message):
-    __slots__ = ("delAll", "ids")
+    __slots__ = ("delAll", "names")
     DELALL_FIELD_NUMBER: _ClassVar[int]
-    IDS_FIELD_NUMBER: _ClassVar[int]
+    NAMES_FIELD_NUMBER: _ClassVar[int]
     delAll: bool
-    ids: _containers.RepeatedScalarFieldContainer[int]
-    def __init__(self, delAll: bool = ..., ids: _Optional[_Iterable[int]] = ...) -> None: ...
+    names: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, delAll: bool = ..., names: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class DelAnimeResponse(_message.Message):
     __slots__ = ("successCount",)

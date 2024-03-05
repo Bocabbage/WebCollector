@@ -1,6 +1,7 @@
 requests
 loguru
 python-dotenv
+google-api-python-client
 python-qbittorrent~=0.4.3
 pyyaml==6.0.1
 xmltodict==0.13.0
