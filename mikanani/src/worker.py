@@ -4,7 +4,8 @@ import asyncio
 import aio_pika
 import traceback
 import grpc
-from .grpc_utils import mongodb_crud_pb2_grpc, mongodb_crud
+import mongodb_crud
+from grpc_utils import mongodb_crud_pb2_grpc
 from typing import Optional, List
 from .configs import RabbitmqConfig
 from .job import RSSJob

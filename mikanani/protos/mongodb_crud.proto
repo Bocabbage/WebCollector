@@ -13,27 +13,33 @@ message QueryAnimeRequest {
 }
 
 message QueryAnimeResponse {
-    repeated string names = 1;
-    repeated string rssUrl = 2;
+    repeated int64 ids = 1;
+    repeated string names = 2;
+    repeated string rssUrl = 3;
 }
 
 // Add/Modify anime configurations
 message UpdateAnimeRequest {
-    repeated string names = 1;
-    repeated string rssUrl = 2;
-    repeated string rssVersion = 3;
-    repeated string rssRegex = 4;
+    repeated int64 ids = 1;
+    repeated string names = 2;
+    repeated string rssUrls = 3;
+    repeated string rssVersions = 4;
+    repeated string rssRegexs = 5;
+    repeated bool isActives = 6;
 }
 
 message UpdateAnimeResponse {
     int64 successCount = 1;
+    repeated string failedList = 2;
 }
 
 // Delete anime configurations
 message DelAnimeRequest {
-    repeated string names = 1; // if ['*'], delete the whole list
+    bool delAll = 1;
+    repeated int64 ids = 2;
 }
 
 message DelAnimeResponse {
     int64 successCount = 1;
+    repeated string failedList = 2;
 }
