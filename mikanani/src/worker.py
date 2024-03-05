@@ -7,9 +7,9 @@ import grpc
 import mongodb_crud
 from grpc_utils import mongodb_crud_pb2_grpc
 from typing import Optional, List
-from .configs import RabbitmqConfig
-from .job import RSSJob
-from .logger import LOGGER
+from configs import RabbitmqConfig, gRPCServerConfig
+from job import RSSJob
+from logger import LOGGER
 
 class MikanamiAnimeSubWorker:
     def __init__(self):
@@ -77,9 +77,8 @@ class MikanamiAnimeSubWorker:
 
 
 class MongoDBOpsWorker:
-    # TODO: impl
-    def __init__(self, listen_addr: str = "[::]:50051"):
-        self.listen_addr = listen_addr
+    def __init__(self):
+        self.listen_addr = gRPCServerConfig["listenAddr"]
 
     async def grpc_server(self):
         try:
@@ -92,6 +91,7 @@ class MongoDBOpsWorker:
             LOGGER.info(f"mongodb grpc server: start serve at {self.listen_addr}")
             await server.start()
             await server.wait_for_termination()
-        except asyncio.CancelledError:
+        except Exception:
+            # TODO: enhance graceful cancel
             LOGGER.info("mongodb grpc server has been cancelled.")
-            await server.stop(0)
+            await server.stop(None)

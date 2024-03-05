@@ -40,3 +40,7 @@ MongoDBConfig: dict = {
     'mikandb': os.getenv('KAPIBARA_MONGODB_MIKANDB'),
     'mikancollection': os.getenv('KAPIBARA_MONGODB_MIKANCOLLECTION'),
 }
+
+gRPCServerConfig: dict = {
+    'listenAddr': os.getenv('KAPIBARA_MIKANANI_GRPC_SERVER_ADDR', '[::]:50051'),
+}

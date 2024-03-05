@@ -10,9 +10,9 @@ from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 # import base64
 from typing import Optional, List
-from .configs import ProxyConfig, QbitConfig
-from .logger import LOGGER
-from .errors import NoRSSYamlError, RSSRuleFileError, RSSRuleFileErrCode
+from configs import ProxyConfig, QbitConfig
+from logger import LOGGER
+from errors import NoRSSYamlError, RSSRuleFileError, RSSRuleFileErrCode
 # from utils import get_url_by_name, get_magnet, download_obj
 
 

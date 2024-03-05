@@ -3,9 +3,8 @@ import signal
 import asyncio
 import argparse
 from typing import List
-from mikanani.src import configs
-from mikanani.src.worker import MikanamiAnimeSubWorker, MongoDBOpsWorker
-from mikanani.src.dispatcher import MikanamiAnimeDispatcher
+from worker import MikanamiAnimeSubWorker, MongoDBOpsWorker
+from dispatcher import MikanamiAnimeDispatcher
 from common.logger import MAIN_LOGGER as mlogger
 
 def signal_handler(tasks: List[asyncio.Task], sig, frame):
@@ -23,7 +22,7 @@ async def _mikanani_async_main():
     try:
         tasks = [
             # [debug] temporarily shutdown sqs_worker
-            MikanamiAnimeSubWorker().sqs_async_run(), # mikanani-parse-and-send worker
+            # MikanamiAnimeSubWorker().sqs_async_run(), # mikanani-parse-and-send worker
             MongoDBOpsWorker().grpc_server(),         # mongodb-crud grpc server
         ]
         tasks = [ asyncio.create_task(x) for x in tasks ]
@@ -37,7 +36,8 @@ async def _mikanani_async_main():
         mlogger.debug(f"Mikanani worker: stopped.")
 
 
-def mikanani_main(args: List[str]):
+def mikanani_main():
+    args = sys.argv[1:]
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default="direct")
     args = parser.parse_args(args)
@@ -48,10 +48,3 @@ def mikanani_main(args: List[str]):
         asyncio.run(_mikanani_async_main())
     elif args.mode == "sqs-dispatch":
         MikanamiAnimeDispatcher().sqs_dispatch()
-
-
-if __name__ == '__main__':
-    mlogger.info(f"mikanani env load test: test-env-log={configs.TestConfig}")
-    args = sys.argv[1:]
-    if args[0] == 'mikanani':
-        mikanani_main(args[1:])

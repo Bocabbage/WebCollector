@@ -41,5 +41,4 @@ message DelAnimeRequest {
 
 message DelAnimeResponse {
     int64 successCount = 1;
-    repeated string failedList = 2;
 }

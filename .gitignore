@@ -13,3 +13,6 @@ __pycache__/
 *example*.json
 
 **/rabbitmq_init.py
+
+*.egg-info/
+*lib/

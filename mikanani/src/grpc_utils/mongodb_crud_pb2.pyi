@@ -56,9 +56,7 @@ class DelAnimeRequest(_message.Message):
     def __init__(self, delAll: bool = ..., ids: _Optional[_Iterable[int]] = ...) -> None: ...
 
 class DelAnimeResponse(_message.Message):
-    __slots__ = ("successCount", "failedList")
+    __slots__ = ("successCount",)
     SUCCESSCOUNT_FIELD_NUMBER: _ClassVar[int]
-    FAILEDLIST_FIELD_NUMBER: _ClassVar[int]
     successCount: int
-    failedList: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, successCount: _Optional[int] = ..., failedList: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, successCount: _Optional[int] = ...) -> None: ...

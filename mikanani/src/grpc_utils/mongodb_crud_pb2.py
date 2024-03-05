@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12mongodb_crud.proto\"6\n\x11QueryAnimeRequest\x12\x12\n\nactiveType\x18\x01 \x01(\x05\x12\r\n\x05names\x18\x02 \x03(\t\"@\n\x12QueryAnimeResponse\x12\x0b\n\x03ids\x18\x01 \x03(\x03\x12\r\n\x05names\x18\x02 \x03(\t\x12\x0e\n\x06rssUrl\x18\x03 \x03(\t\"|\n\x12UpdateAnimeRequest\x12\x0b\n\x03ids\x18\x01 \x03(\x03\x12\r\n\x05names\x18\x02 \x03(\t\x12\x0f\n\x07rssUrls\x18\x03 \x03(\t\x12\x13\n\x0brssVersions\x18\x04 \x03(\t\x12\x11\n\trssRegexs\x18\x05 \x03(\t\x12\x11\n\tisActives\x18\x06 \x03(\x08\"?\n\x13UpdateAnimeResponse\x12\x14\n\x0csuccessCount\x18\x01 \x01(\x03\x12\x12\n\nfailedList\x18\x02 \x03(\t\".\n\x0f\x44\x65lAnimeRequest\x12\x0e\n\x06\x64\x65lAll\x18\x01 \x01(\x08\x12\x0b\n\x03ids\x18\x02 \x03(\x03\"<\n\x10\x44\x65lAnimeResponse\x12\x14\n\x0csuccessCount\x18\x01 \x01(\x03\x12\x12\n\nfailedList\x18\x02 \x03(\t2\xbb\x01\n\x11MikananiMongoCrud\x12\x37\n\nQueryAnime\x12\x12.QueryAnimeRequest\x1a\x13.QueryAnimeResponse\"\x00\x12:\n\x0bUpdateAnime\x12\x13.UpdateAnimeRequest\x1a\x14.UpdateAnimeResponse\"\x00\x12\x31\n\x08\x44\x65lAnime\x12\x10.DelAnimeRequest\x1a\x11.DelAnimeResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12mongodb_crud.proto\"6\n\x11QueryAnimeRequest\x12\x12\n\nactiveType\x18\x01 \x01(\x05\x12\r\n\x05names\x18\x02 \x03(\t\"@\n\x12QueryAnimeResponse\x12\x0b\n\x03ids\x18\x01 \x03(\x03\x12\r\n\x05names\x18\x02 \x03(\t\x12\x0e\n\x06rssUrl\x18\x03 \x03(\t\"|\n\x12UpdateAnimeRequest\x12\x0b\n\x03ids\x18\x01 \x03(\x03\x12\r\n\x05names\x18\x02 \x03(\t\x12\x0f\n\x07rssUrls\x18\x03 \x03(\t\x12\x13\n\x0brssVersions\x18\x04 \x03(\t\x12\x11\n\trssRegexs\x18\x05 \x03(\t\x12\x11\n\tisActives\x18\x06 \x03(\x08\"?\n\x13UpdateAnimeResponse\x12\x14\n\x0csuccessCount\x18\x01 \x01(\x03\x12\x12\n\nfailedList\x18\x02 \x03(\t\".\n\x0f\x44\x65lAnimeRequest\x12\x0e\n\x06\x64\x65lAll\x18\x01 \x01(\x08\x12\x0b\n\x03ids\x18\x02 \x03(\x03\"(\n\x10\x44\x65lAnimeResponse\x12\x14\n\x0csuccessCount\x18\x01 \x01(\x03\x32\xbb\x01\n\x11MikananiMongoCrud\x12\x37\n\nQueryAnime\x12\x12.QueryAnimeRequest\x1a\x13.QueryAnimeResponse\"\x00\x12:\n\x0bUpdateAnime\x12\x13.UpdateAnimeRequest\x1a\x14.UpdateAnimeResponse\"\x00\x12\x31\n\x08\x44\x65lAnime\x12\x10.DelAnimeRequest\x1a\x11.DelAnimeResponse\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,7 +32,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_DELANIMEREQUEST']._serialized_start=335
   _globals['_DELANIMEREQUEST']._serialized_end=381
   _globals['_DELANIMERESPONSE']._serialized_start=383
-  _globals['_DELANIMERESPONSE']._serialized_end=443
-  _globals['_MIKANANIMONGOCRUD']._serialized_start=446
-  _globals['_MIKANANIMONGOCRUD']._serialized_end=633
+  _globals['_DELANIMERESPONSE']._serialized_end=423
+  _globals['_MIKANANIMONGOCRUD']._serialized_start=426
+  _globals['_MIKANANIMONGOCRUD']._serialized_end=613
 # @@protoc_insertion_point(module_scope)

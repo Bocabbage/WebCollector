@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import mongodb_crud_pb2 as mongodb__crud__pb2
+import grpc_utils.mongodb_crud_pb2 as mongodb__crud__pb2
 
 
 class MikananiMongoCrudStub(object):

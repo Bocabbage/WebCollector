@@ -1,6 +1,6 @@
 import os
 import loguru
-from .configs import LogConfig
+from configs import LogConfig
 
 os.makedirs(LogConfig['log_dir'], exist_ok=True)
 LOGGER = loguru.logger

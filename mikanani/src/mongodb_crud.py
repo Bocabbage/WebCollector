@@ -6,7 +6,7 @@ from typing import List
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from logger import LOGGER
-from mikanani.src.configs import MongoDBConfig
+from configs import MongoDBConfig
 
 class MikananiMongoDBCrud(MikananiMongoCrudServicer):
     r'''

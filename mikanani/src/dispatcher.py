@@ -1,7 +1,7 @@
 import pika
 import json
 from pymongo import MongoClient
-from .configs import RabbitmqConfig, MongoDBConfig
+from configs import RabbitmqConfig, MongoDBConfig
 
 class MikanamiAnimeDispatcher:
     def sqs_dispatch(self):
