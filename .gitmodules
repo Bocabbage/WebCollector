@@ -1,0 +1,3 @@
+[submodule "mikanani/protos"]
+	path = mikanani/protos
+	url = https://github.com/Bocabbage/Kapibara-Protobufs

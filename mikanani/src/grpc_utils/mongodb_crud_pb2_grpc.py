@@ -15,17 +15,17 @@ class MikananiMongoCrudStub(object):
             channel: A grpc.Channel.
         """
         self.QueryAnime = channel.unary_unary(
-                '/MikananiMongoCrud/QueryAnime',
+                '/mikanani_grpc_utils.MikananiMongoCrud/QueryAnime',
                 request_serializer=mongodb__crud__pb2.QueryAnimeRequest.SerializeToString,
                 response_deserializer=mongodb__crud__pb2.QueryAnimeResponse.FromString,
                 )
         self.UpdateAnime = channel.unary_unary(
-                '/MikananiMongoCrud/UpdateAnime',
+                '/mikanani_grpc_utils.MikananiMongoCrud/UpdateAnime',
                 request_serializer=mongodb__crud__pb2.UpdateAnimeRequest.SerializeToString,
                 response_deserializer=mongodb__crud__pb2.UpdateAnimeResponse.FromString,
                 )
         self.DelAnime = channel.unary_unary(
-                '/MikananiMongoCrud/DelAnime',
+                '/mikanani_grpc_utils.MikananiMongoCrud/DelAnime',
                 request_serializer=mongodb__crud__pb2.DelAnimeRequest.SerializeToString,
                 response_deserializer=mongodb__crud__pb2.DelAnimeResponse.FromString,
                 )
@@ -72,7 +72,7 @@ def add_MikananiMongoCrudServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'MikananiMongoCrud', rpc_method_handlers)
+            'mikanani_grpc_utils.MikananiMongoCrud', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -91,7 +91,7 @@ class MikananiMongoCrud(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/MikananiMongoCrud/QueryAnime',
+        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiMongoCrud/QueryAnime',
             mongodb__crud__pb2.QueryAnimeRequest.SerializeToString,
             mongodb__crud__pb2.QueryAnimeResponse.FromString,
             options, channel_credentials,
@@ -108,7 +108,7 @@ class MikananiMongoCrud(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/MikananiMongoCrud/UpdateAnime',
+        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiMongoCrud/UpdateAnime',
             mongodb__crud__pb2.UpdateAnimeRequest.SerializeToString,
             mongodb__crud__pb2.UpdateAnimeResponse.FromString,
             options, channel_credentials,
@@ -125,7 +125,7 @@ class MikananiMongoCrud(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/MikananiMongoCrud/DelAnime',
+        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiMongoCrud/DelAnime',
             mongodb__crud__pb2.DelAnimeRequest.SerializeToString,
             mongodb__crud__pb2.DelAnimeResponse.FromString,
             options, channel_credentials,
