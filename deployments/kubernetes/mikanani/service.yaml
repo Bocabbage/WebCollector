@@ -8,7 +8,6 @@ spec:
     app: mikanani-worker
   ports:
     - protocol: TCP
-      name: grpcPort
       port: 15051       
       targetPort: 50051
   type: NodePort
