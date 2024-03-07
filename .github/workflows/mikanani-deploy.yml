@@ -50,6 +50,7 @@ jobs:
         "worker")
         echo "Deploy worker only..."
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/service.yaml
         ;;
         "dispatcher")
         echo "Deploy dispatcher only..."
@@ -58,6 +59,7 @@ jobs:
         "all")
         echo "Deploy both worker and dispatcher..."
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/service.yaml
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/dispatcher.yaml
         ;;
         esac
