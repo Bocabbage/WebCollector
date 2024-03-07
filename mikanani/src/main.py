@@ -21,8 +21,7 @@ def signal_handler(tasks: List[asyncio.Task], sig, frame):
 async def _mikanani_async_main():
     try:
         tasks = [
-            # [debug] temporarily shutdown sqs_worker
-            # MikanamiAnimeSubWorker().sqs_async_run(), # mikanani-parse-and-send worker
+            MikanamiAnimeSubWorker().sqs_async_run(), # mikanani-parse-and-send worker
             MongoDBOpsWorker().grpc_server(),         # mongodb-crud grpc server
         ]
         tasks = [ asyncio.create_task(x) for x in tasks ]
