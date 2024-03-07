@@ -8,6 +8,7 @@ spec:
     app: mikanani-worker
   ports:
     - protocol: TCP
-      port: 15051       
+      nodePort: 30007
+      port: 50051      
       targetPort: 50051
   type: NodePort
