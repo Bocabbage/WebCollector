@@ -9,5 +9,5 @@ python -m grpc_tools.protoc \
 --python_out=./mikanani/src/grpc_utils \
 --pyi_out=./mikanani/src/grpc_utils \
 --grpc_python_out=./mikanani/src/grpc_utils \
-./mikanani/protos/mongodb_crud.proto
+./mikanani/protos/mikanani_grpc.proto
 ```

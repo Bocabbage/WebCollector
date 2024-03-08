@@ -1,6 +1,6 @@
 import grpc
-import mongodb_crud_pb2
-import mongodb_crud_pb2_grpc
+import grpc_utils.mongodb_crud_pb2 as mongodb_crud_pb2
+import grpc_utils.mongodb_crud_pb2_grpc as mongodb_crud_pb2_grpc
 
 def test_query():
     channel = grpc.insecure_channel("localhost:50051")
