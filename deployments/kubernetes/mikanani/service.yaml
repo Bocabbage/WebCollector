@@ -8,7 +8,7 @@ spec:
     app: mikanani-worker
   ports:
     - protocol: TCP
-      nodePort: 30007
+      name: grpc-svc
       port: 50051      
       targetPort: 50051
-  type: NodePort
+  type: ClusterIP

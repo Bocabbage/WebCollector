@@ -4,8 +4,8 @@ import asyncio
 import aio_pika
 import traceback
 import grpc
-import mongodb_crud
-from grpc_utils import mongodb_crud_pb2_grpc
+import grpc_service
+from grpc_utils import mikanani_grpc_pb2_grpc
 from typing import Optional, List
 from configs import RabbitmqConfig, gRPCServerConfig
 from job import RSSJob
@@ -76,22 +76,42 @@ class MikanamiAnimeSubWorker:
             # raise
 
 
-class MongoDBOpsWorker:
+# class MongoDBOpsWorker:
+#     def __init__(self):
+#         self.listen_addr = gRPCServerConfig["listenAddr"]
+
+#     async def grpc_server(self):
+#         try:
+#             server = grpc.aio.server()
+#             mongodb_crud_pb2_grpc.add_MikananiMongoCrudServicer_to_server(
+#                 mongodb_crud.MikananiMongoDBCrud(),
+#                 server,
+#             )
+#             server.add_insecure_port(self.listen_addr)
+#             LOGGER.info(f"mongodb grpc server: start serve at {self.listen_addr}")
+#             await server.start()
+#             await server.wait_for_termination()
+#         except Exception:
+#             # TODO: enhance graceful cancel
+#             LOGGER.info("mongodb grpc server has been cancelled.")
+#             await server.stop(None)
+            
+class MiakananigRPCSvcWorker:
     def __init__(self):
         self.listen_addr = gRPCServerConfig["listenAddr"]
 
     async def grpc_server(self):
         try:
             server = grpc.aio.server()
-            mongodb_crud_pb2_grpc.add_MikananiMongoCrudServicer_to_server(
-                mongodb_crud.MikananiMongoDBCrud(),
+            mikanani_grpc_pb2_grpc.add_MikananiServiceServicer_to_server(
+                grpc_service.MikananiSvcServicer(),
                 server,
             )
             server.add_insecure_port(self.listen_addr)
-            LOGGER.info(f"mongodb grpc server: start serve at {self.listen_addr}")
+            LOGGER.info(f"mikanani grpc server: start serve at {self.listen_addr}")
             await server.start()
             await server.wait_for_termination()
         except Exception:
             # TODO: enhance graceful cancel
-            LOGGER.info("mongodb grpc server has been cancelled.")
+            LOGGER.info("mikanani grpc server has been cancelled.")
             await server.stop(None)

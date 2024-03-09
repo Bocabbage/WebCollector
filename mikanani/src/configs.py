@@ -41,6 +41,13 @@ MongoDBConfig: dict = {
     'mikancollection': os.getenv('KAPIBARA_MONGODB_MIKANCOLLECTION'),
 }
 
+MySQLConfig: dict = {
+    'host': os.getenv('MIKANANI_MYSQL_HOST'),
+    'user': os.getenv('MIKANANI_MYSQL_USER'),
+    'password': os.getenv('MIKANANI_MYSQL_PWD'),
+    'database': 'mikanani',
+}
+
 gRPCServerConfig: dict = {
-    'listenAddr': os.getenv('KAPIBARA_MIKANANI_GRPC_SERVER_ADDR', '[::]:50051'),
+    'listenAddr': '[::]:50051',
 }

@@ -3,7 +3,7 @@ import signal
 import asyncio
 import argparse
 from typing import List
-from worker import MikanamiAnimeSubWorker, MongoDBOpsWorker
+from worker import MikanamiAnimeSubWorker, MiakananigRPCSvcWorker
 from dispatcher import MikanamiAnimeDispatcher
 from logger import LOGGER
 
@@ -22,7 +22,7 @@ async def _mikanani_async_main():
     try:
         tasks = [
             MikanamiAnimeSubWorker().sqs_async_run(), # mikanani-parse-and-send worker
-            MongoDBOpsWorker().grpc_server(),         # mongodb-crud grpc server
+            MiakananigRPCSvcWorker().grpc_server(),         # mongodb-crud grpc server
         ]
         tasks = [ asyncio.create_task(x) for x in tasks ]
 
