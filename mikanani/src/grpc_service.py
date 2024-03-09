@@ -49,11 +49,13 @@ class MikananiSvcServicer(MikananiServiceServicer):
         }
         active_filter = active_type_query_map.get(request.statusFilter)
         if (active_filter is None or
-            request.startIndex >= request.endIndex or
+            request.startIndex > request.endIndex or
             request.startIndex < -1 or request.endIndex < -1
         ):
             context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
-            context.set_details("invalid filter or active_type.")
+            context.set_details((f"invalid filter or active_type: "
+                f"start-{request.startIndex}, end-{request.endIndex}, filter-{request.statusFilter}.",
+                f"start-{type(request.startIndex)}, end{type(request.endIndex)}, filter{type(request.statusFilter)}."))
             return ListAnimeMetaResponse()
 
         sql = ("SELECT uid, name, download_bitmap, is_active, tags"
