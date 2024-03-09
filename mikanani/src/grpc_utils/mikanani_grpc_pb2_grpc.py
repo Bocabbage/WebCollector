@@ -3,7 +3,7 @@
 import grpc
 
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
-import mikanani_grpc_pb2 as mikanani__grpc__pb2
+import grpc_utils.mikanani_grpc_pb2 as mikanani__grpc__pb2
 
 
 class MikananiServiceStub(object):
