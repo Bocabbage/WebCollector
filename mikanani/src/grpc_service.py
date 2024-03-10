@@ -58,9 +58,9 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 f"start-{type(request.startIndex)}, end{type(request.endIndex)}, filter{type(request.statusFilter)}."))
             return ListAnimeMetaResponse()
 
-        sql = ("SELECT uid, name, download_bitmap, is_active, tags"
+        sql = ("SELECT uid, name, download_bitmap, is_active, tags "
                 f"FROM `mikanani`.`anime_meta` {active_filter}")
-        if request.startIndex != -1 or request.endIndex == -1:
+        if request.startIndex != -1 or request.endIndex != -1:
             sql += f" LIMIT {request.startIndex}, {request.endIndex - request.startIndex};"
         
         meta_array: List[AnimeMeta] = list()
