@@ -62,7 +62,6 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 f"FROM `mikanani`.`anime_meta` {active_filter}")
         if request.startIndex != -1 or request.endIndex != -1:
             sql += f" LIMIT {request.startIndex}, {request.endIndex - request.startIndex};"
-        
         meta_array: List[AnimeMeta] = list()
         result = list()
         try:
@@ -73,12 +72,14 @@ class MikananiSvcServicer(MikananiServiceServicer):
             if result:
                 for uid, name, download_bitmap, is_active, tags in result:
                     meta_array.append(AnimeMeta(uid, name, download_bitmap, is_active, tags))
+            LOGGER.debug(f"f[ListAnimeMeta][mysql] return {len(result)}")
         except Exception as e:
             LOGGER.error(f"[ListAnimeMeta] exception-{e}: {traceback.format_exc()}")
             context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
             context.set_details("invalid filter or active_type.")
             return ListAnimeMetaResponse()
         
+        LOGGER.debug(f"f[ListAnimeMeta][SUCCESS] return ({len(result)}, {meta_array[:1]}...)")
         return ListAnimeMetaResponse(len(result), meta_array)
     
     async def GetAnimeDoc(self, request, context):

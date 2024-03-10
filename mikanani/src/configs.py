@@ -5,7 +5,7 @@ TestConfig: str = os.getenv('TESTCONFIG')
 
 LogConfig: Dict[str, Optional[str]] = {
     'log_dir': os.getenv('LOG_DIR', './logs'),
-    'log_level': os.getenv('LOG_LEVEL', 'INFO'),
+    'log_level': os.getenv('LOG_LEVEL', 'DEBUG'),
 }
 
 RSSConfig: Dict[str, str] = {
