@@ -71,7 +71,13 @@ class MikananiSvcServicer(MikananiServiceServicer):
             result = cursor.fetchall()
             if result:
                 for uid, name, download_bitmap, is_active, tags in result:
-                    meta_array.append(AnimeMeta(uid, name, download_bitmap, is_active, tags))
+                    meta_array.append(AnimeMeta(
+                        uid=uid, 
+                        name=name, 
+                        downloadBitmap=download_bitmap, 
+                        isActive=is_active, 
+                        # tags=tags
+                    ))
             LOGGER.debug(f"f[ListAnimeMeta][mysql] return {len(result)}")
         except Exception as e:
             LOGGER.error(f"[ListAnimeMeta] exception-{e}: {traceback.format_exc()}")
@@ -80,7 +86,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             return ListAnimeMetaResponse()
         
         LOGGER.debug(f"f[ListAnimeMeta][SUCCESS] return ({len(result)}, {meta_array[:1]}...)")
-        return ListAnimeMetaResponse(len(result), meta_array)
+        return ListAnimeMetaResponse(itemCount=len(result), animeMetas=meta_array)
     
     async def GetAnimeDoc(self, request, context):
         return GetAnimeDocResponse()
