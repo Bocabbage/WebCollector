@@ -22,7 +22,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
         cls.mysql_conn = mysql.connector.connect(
             host=MySQLConfig['host'],
             user=MySQLConfig['user'],
-            password=MySQLConfig['pwd'],
+            password=MySQLConfig['password'],
             database=MySQLConfig['database']
         )
 
