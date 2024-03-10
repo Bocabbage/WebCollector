@@ -4,6 +4,7 @@ metadata:
   name: mikanani-svc
   namespace: web-general
 spec:
+  clusterIP: 10.43.244.66
   selector:
     app: mikanani-worker
   ports:
