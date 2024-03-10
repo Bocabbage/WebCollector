@@ -53,15 +53,14 @@ class MikananiSvcServicer(MikananiServiceServicer):
             request.startIndex < -1 or request.endIndex < -1
         ):
             context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
-            context.set_details((f"invalid filter or active_type: "
-                f"start-{request.startIndex}, end-{request.endIndex}, filter-{request.statusFilter}.",
-                f"start-{type(request.startIndex)}, end{type(request.endIndex)}, filter{type(request.statusFilter)}."))
+            context.set_details(f"invalid filter or active_type: "
+                f"start-{request.startIndex}, end-{request.endIndex}, filter-{request.statusFilter}.")
             return ListAnimeMetaResponse()
 
         sql = ("SELECT uid, name, download_bitmap, is_active, tags "
                 f"FROM `mikanani`.`anime_meta` {active_filter}")
         if request.startIndex != -1 or request.endIndex != -1:
-            sql += f" LIMIT {request.startIndex}, {request.endIndex - request.startIndex};"
+            sql += f" LIMIT {request.startIndex - 1}, {request.endIndex - request.startIndex + 1};"
         meta_array: List[AnimeMeta] = list()
         result = list()
         try:
