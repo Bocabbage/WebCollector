@@ -12,7 +12,6 @@ proxies = {
     'https': 'http://' + PROXY_ADDR,
 }
 
-
 def get_url_by_name(anime_name: str) -> Optional[str]:
     r'''
         Get detail-page url (without domain) for "anime_name"
