@@ -14,7 +14,7 @@ from mysql.connector import MySQLConnection
 from snowflake import SnowflakeGenerator
 
 # TODO: enhance machine-id gathering
-id_generator = SnowflakeGenerator(int(ipaddress.IPv4Address(os.getenv('POD_IP', '0.0.0.42'))))
+id_generator = SnowflakeGenerator(42)
 
 class MikananiSvcServicer(MikananiServiceServicer):
     mongo_client: Optional[MongoClient] = None
