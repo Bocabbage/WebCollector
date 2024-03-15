@@ -49,7 +49,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
     
     @classmethod
     def _get_mysql_conn(cls):
-        if cls.mysql_conn is None:
+        if cls.mysql_conn is None or not cls.mysql_conn.is_connected():
             cls._init_mysql_client()
         # TODO: Add timeout retry
         return cls.mysql_conn
@@ -109,6 +109,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             result = [x for x in mongo_col.find({"uid": uid}, {"_id": 0})]
             LOGGER.debug(f"[GetAnimeDoc][return success] get uid-{uid} doc: {result}")
             if result:
+                result = result[0]
                 return GetAnimeDocResponse(
                     animeDoc=AnimeDoc(
                         uid=result["uid"],
