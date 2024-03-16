@@ -62,14 +62,14 @@ class MikananiSvcServicer(MikananiServiceServicer):
                         isActive=is_active, 
                         # tags=tags
                     ))
-            LOGGER.debug(f"f[ListAnimeMeta][mysql] return {len(result)}")
+            LOGGER.debug(f"[ListAnimeMeta][mysql] return {len(result)}")
         except Exception as e:
             LOGGER.error(f"[ListAnimeMeta] exception-{e}: {traceback.format_exc()}")
             context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
             context.set_details("invalid filter or active_type.")
             return ListAnimeMetaResponse()
         
-        LOGGER.debug(f"f[ListAnimeMeta][SUCCESS] return ({len(result)}, {meta_array[:1]}...)")
+        LOGGER.debug(f"[ListAnimeMeta][SUCCESS] return ({len(result)}, {meta_array[:1]}...)")
         cursor.close()
         return ListAnimeMetaResponse(itemCount=len(result), animeMetas=meta_array)
 
@@ -124,6 +124,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 LOGGER.info(f"[UpdateAnimeDoc][SUCCESS]: uid[{uid}]")
         except Exception as e:
             LOGGER.error(f"[UpdateAnimeDoc] {e}[{traceback.format_exc()}]")
+            LOGGER.debug(f"[UpdateAnimeDoc][uid: {uid}][request: {request.updateAnimeDoc}]")
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details(f"internal error when update mongodb.")
         return None
@@ -162,11 +163,12 @@ class MikananiSvcServicer(MikananiServiceServicer):
             else:
                 context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
                 context.set_details(f"anime not exist.")
+                LOGGER.debug(f"[UpdateAnimeMeta] anime not exist: uid[{uid}], request[{request.updateAnimeMeta}]")
                 cursor.close()
                 return None
         except Exception as e:
             conn.rollback()
-            LOGGER.error(f"[UpdateAnimeDoc] {e}[{traceback.format_exc()}]")
+            LOGGER.error(f"[UpdateAnimeMeta][uid: {uid}][request: {request.updateAnimeMeta}] {e}[{traceback.format_exc()}]")
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details(f"internal error when update meta.")
         cursor.close()
