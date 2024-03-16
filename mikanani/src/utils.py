@@ -1,4 +1,3 @@
-from configs import PROXY_ADDR, SEARCH_ROUTE, BASE_URL, QBITT_ADDR
 from typing import Optional
 from logger import LOGGER
 from bs4 import BeautifulSoup
