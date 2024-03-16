@@ -108,15 +108,11 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 "regex": request.updateAnimeDoc.regex,
             }
             # Remove no-change segment
-            expected_update = {k:v for k, v in expected_update.items() if not v}
+            expected_update = {k:v for k, v in expected_update.items() if v}
             result = mongo_col.update_one(
                 {"uid": Int64(uid)},
                 {
-                    "$set": {
-                        "rss_url": request.updateAnimeDoc.rssUrl,
-                        "rule": request.updateAnimeDoc.rule,
-                        "regex": request.updateAnimeDoc.regex,
-                    }
+                    "$set": expected_update,
                 },
                 upsert=False,
             )
