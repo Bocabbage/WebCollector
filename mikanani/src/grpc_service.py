@@ -2,57 +2,29 @@ from grpc_utils.mikanani_grpc_pb2_grpc import MikananiServiceServicer
 from grpc_utils.mikanani_grpc_pb2 import *
 from grpc import ServicerContext, StatusCode as gRPCStatusCode
 from configs import MongoDBConfig, MySQLConfig
+import db_helper
+from bson.int64 import Int64
 from dispatcher import MikanamiAnimeDispatcher
 from logger import LOGGER
 from pymongo import MongoClient
 from typing import Optional, List
-import os
-import ipaddress
 import traceback
-import mysql.connector
 from mysql.connector import MySQLConnection
 from snowflake import SnowflakeGenerator
 
 # TODO: enhance machine-id gathering
 id_generator = SnowflakeGenerator(42)
 
+def get_mongo_col_cursor():
+    mongo_client = db_helper.get_mongo_client()
+    mongo_db = mongo_client[MongoDBConfig['mikandb']]
+    mongo_col = mongo_db[MongoDBConfig['mikancollection']]
+    return mongo_col
+
+
 class MikananiSvcServicer(MikananiServiceServicer):
     mongo_client: Optional[MongoClient] = None
     mysql_conn: Optional[MySQLConnection] = None
-    
-    @classmethod
-    def _init_mongo_client(cls):
-        cls.mongo_client: Optional[MongoClient] = MongoClient(MongoDBConfig['host'])
-        
-    @classmethod
-    def _init_mysql_client(cls) -> MySQLConnection:
-        cls.mysql_conn = mysql.connector.connect(
-            host=MySQLConfig['host'],
-            user=MySQLConfig['user'],
-            password=MySQLConfig['password'],
-            database=MySQLConfig['database']
-        )
-
-    @classmethod
-    def _get_mongo_col_cursor(cls):
-        if cls.mongo_client is None:
-            cls._init_mongo_client()
-        # TODO: Add timeout retry
-        mongo_db = cls.mongo_client[MongoDBConfig['mikandb']]
-        return mongo_db[MongoDBConfig['mikancollection']]
-    
-    @classmethod
-    def _get_mongo_client(cls) -> MongoClient:
-        if cls.mongo_client is None:
-            cls._init_mongo_client()
-        return cls.mongo_client
-    
-    @classmethod
-    def _get_mysql_conn(cls):
-        if cls.mysql_conn is None or not cls.mysql_conn.is_connected():
-            cls._init_mysql_client()
-        # TODO: Add timeout retry
-        return cls.mysql_conn
     
     async def ListAnimeMeta(self, request: ListAnimeMetaRequest, context: ServicerContext):
         active_type_query_map = {
@@ -77,7 +49,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
         meta_array: List[AnimeMeta] = list()
         result = list()
         try:
-            conn = self._get_mysql_conn()
+            conn = db_helper.get_mysql_conn()
             cursor = conn.cursor()
             cursor.execute(sql)
             result = cursor.fetchall()
@@ -105,14 +77,14 @@ class MikananiSvcServicer(MikananiServiceServicer):
     async def GetAnimeDoc(self, request: GetAnimeDocRequest, context: ServicerContext):
         uid = request.uid
         try:
-            mongo_col = self._get_mongo_col_cursor()
-            result = [x for x in mongo_col.find({"uid": uid}, {"_id": 0})]
+            mongo_col = get_mongo_col_cursor()
+            result = [x for x in mongo_col.find({"uid": Int64(uid)}, {"_id": 0})]
             LOGGER.debug(f"[GetAnimeDoc][return success] get uid-{uid} doc: {result}")
             if result:
                 result = result[0]
                 return GetAnimeDocResponse(
                     animeDoc=AnimeDoc(
-                        uid=result["uid"],
+                        uid=int(result["uid"]),
                         rssUrl=result["rss_url"],
                         rule=result["rule"],
                         regex=result["regex"],
@@ -129,7 +101,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
     async def UpdateAnimeDoc(self, request: UpdateAnimeDocRequest, context:ServicerContext):
         try:
             uid = request.updateAnimeDoc.uid
-            mongo_col = self._get_mongo_col_cursor()
+            mongo_col = get_mongo_col_cursor()
             expected_update = {
                 "rss_url": request.updateAnimeDoc.rssUrl,
                 "rule": request.updateAnimeDoc.rule,
@@ -138,7 +110,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             # Remove no-change segment
             expected_update = {k:v for k, v in expected_update.items() if not v}
             result = mongo_col.update_one(
-                {"uid": uid},
+                {"uid": Int64(uid)},
                 {
                     "$set": {
                         "rss_url": request.updateAnimeDoc.rssUrl,
@@ -165,7 +137,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             uid = request.updateAnimeMeta.uid
             qsql = ("SELECT uid, name, download_bitmap, is_active, tags "
                     f"FROM `mikanani`.`anime_meta` WHERE uid = {uid};")
-            conn = self._get_mysql_conn()
+            conn = db_helper.get_mysql_conn()
             cursor = conn.cursor()
             cursor.execute(qsql)
             result = cursor.fetchall()
@@ -212,7 +184,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             doc_info = request.insertAnimeDoc
 
             # Insert meta into mysql
-            mysql_conn = self._get_mysql_conn()
+            mysql_conn = db_helper.get_mysql_conn()
             cursor = mysql_conn.cursor()
             isql = ("INSERT INTO `mikanani`.`anime_meta` (uid, name, is_active)"
                     f"VALUES ({uid}, '{meta_info.name}', TRUE);")
@@ -220,12 +192,12 @@ class MikananiSvcServicer(MikananiServiceServicer):
             mysql_conn.commit()
 
             # Insert doc into mongodb
-            mongo_client = self._get_mongo_client()
+            mongo_client = db_helper.get_mongo_client()
             with mongo_client.start_session() as session:
                 with session.start_transaction():
-                    mongo_col = self._get_mongo_col_cursor()
+                    mongo_col = get_mongo_col_cursor()
                     mongo_col.insert_one({
-                        "uid": uid,
+                        "uid": Int64(uid),
                         "rss_url": doc_info.rssUrl,
                         "rule": doc_info.rule,
                         "regex": doc_info.regex,
@@ -242,7 +214,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
     async def DeleteAnimeItem(self, request: DeleteAnimeItemRequest, context: ServicerContext):
         uid = request.uid
         try:
-            conn = self._get_mysql_conn()
+            conn = db_helper.get_mysql_conn()
             cursor = conn.cursor()
             dsql = f"DELETE FROM `mikanani`.`anime_meta` WHERE uid = {uid}"
             cursor.execute(dsql)
@@ -250,8 +222,8 @@ class MikananiSvcServicer(MikananiServiceServicer):
             
             if cursor.rowcount > 0:
                 LOGGER.info(f"[DeleteAnimeItem][delete {uid} from meta-table.")
-                mongo_col = self._get_mongo_col_cursor()
-                result = mongo_col.delete_one({"uid": uid})
+                mongo_col = get_mongo_col_cursor()
+                result = mongo_col.delete_one({"uid": Int64(uid)})
                 if result.deleted_count != 1:
                     LOGGER.warning(f"[DeleteAnimeItem]delete {result.deleted_count} for uid [{uid}].")
                     context.set_code(gRPCStatusCode.INVALID_ARGUMENT)

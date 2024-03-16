@@ -6,6 +6,8 @@ from urllib.parse import quote
 from qbittorrent import Client
 # import os
 import requests
+import threading
+import functools
 
 proxies = {
     'http': 'http://' + PROXY_ADDR,
@@ -96,3 +98,17 @@ def download_obj(magnet: str, savepath: str) -> bool:
     except Exception as e:
         LOGGER.debug(f"download obj {magnet} failed: exception {e}")
     return False
+
+
+def singleton(cls):
+    instances: dict = dict()
+    lock = threading.Lock()
+    
+    @functools.wraps(cls)
+    def wrapper(*args, **kwargs):
+        if cls not in instances:
+            with lock:
+                if cls not in instances:
+                    instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return wrapper

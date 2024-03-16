@@ -1,16 +1,26 @@
 import pika
 import json
-from pymongo import MongoClient
+from bson.int64 import Int64
+from db_helper import get_mongo_client, get_mysql_conn
 from configs import RabbitmqConfig, MongoDBConfig
 
 class MikanamiAnimeDispatcher:
     def sqs_dispatch(self):
         # Get expected-list in mongodb
-        mongo_client = MongoClient(MongoDBConfig['host'])
+        uid_list = list()
+        conn = get_mysql_conn()
+        sql = f"SELECT uid FROM `mikanani`.`anime_meta` WHERE is_active IS TRUE;"
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        if result:
+            uid_list = [Int64(uid) for uid in result]
+        
+        mongo_client = get_mongo_client()
         mongo_db = mongo_client[MongoDBConfig['mikandb']]
         mongo_col = mongo_db[MongoDBConfig['mikancollection']]
 
-        query = { "isActive": True }
+        query = { "uid": {"$in": uid_list} }
 
         data_to_send = [
             x for x in mongo_col.find(query, {"_id": 0})
