@@ -203,10 +203,12 @@ class MikananiSvcServicer(MikananiServiceServicer):
             mongo_col.update_one(
                 {"uid": Int64(uid)},
                 {
-                    "uid": Int64(uid),
-                    "rss_url": doc_info.rssUrl,
-                    "rule": doc_info.rule,
-                    "regex": doc_info.regex,   
+                    "$set": {
+                        "uid": Int64(uid),
+                        "rss_url": doc_info.rssUrl,
+                        "rule": doc_info.rule,
+                        "regex": doc_info.regex,   
+                    }
                 },
                 upsert=True,
             )
