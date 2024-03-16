@@ -145,7 +145,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 download_bitmap = request.updateAnimeMeta.downloadBitmap if request.updateAnimeMeta.downloadBitmap is not None else download_bitmap
                 is_active = request.updateAnimeMeta.isActive if request.updateAnimeMeta.isActive is not None else is_active
                 
-                usql = ("UPDATE `mikanani`.`anime_meta` SET "
+                usql = ("UPDATE `mikanani`.`anime_meta` "
                         f"SET name = {name}, "
                         f"download_bitmap = {download_bitmap} "
                         f"is_active = {is_active} " 
