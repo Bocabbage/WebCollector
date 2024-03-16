@@ -16,9 +16,9 @@ class AnimeMeta(_message.Message):
     uid: int
     name: str
     downloadBitmap: int
-    isActive: bool
+    isActive: int
     tags: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, uid: _Optional[int] = ..., name: _Optional[str] = ..., downloadBitmap: _Optional[int] = ..., isActive: bool = ..., tags: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, uid: _Optional[int] = ..., name: _Optional[str] = ..., downloadBitmap: _Optional[int] = ..., isActive: _Optional[int] = ..., tags: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class AnimeDoc(_message.Message):
     __slots__ = ("uid", "rssUrl", "rule", "regex")

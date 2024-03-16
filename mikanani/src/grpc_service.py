@@ -1,5 +1,6 @@
 from grpc_utils.mikanani_grpc_pb2_grpc import MikananiServiceServicer
 from grpc_utils.mikanani_grpc_pb2 import *
+from google.protobuf.empty_pb2 import Empty
 from grpc import ServicerContext, StatusCode as gRPCStatusCode
 from configs import MongoDBConfig, MySQLConfig
 import db_helper
@@ -127,7 +128,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             LOGGER.debug(f"[UpdateAnimeDoc][uid: {uid}][request: {request.updateAnimeDoc}]")
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details(f"internal error when update mongodb.")
-        return None
+        return Empty()
     
     async def UpdateAnimeMeta(self, request: UpdateAnimeMetaRequest, context: ServicerContext):
         try:
@@ -143,7 +144,11 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 #TODO generize
                 name = request.updateAnimeMeta.name if request.updateAnimeMeta.name is not None else name
                 download_bitmap = request.updateAnimeMeta.downloadBitmap if request.updateAnimeMeta.downloadBitmap is not None else download_bitmap
-                is_active = request.updateAnimeMeta.isActive if request.updateAnimeMeta.isActive is not None else is_active
+                
+                if request.updateAnimeMeta.isActive == 1:
+                    is_active = True
+                elif request.updateAnimeMeta.isActive == -1:
+                    is_active = False
                 
                 usql = ("UPDATE `mikanani`.`anime_meta` "
                         f"SET name = '{name}', "
@@ -172,7 +177,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details(f"internal error when update meta.")
         cursor.close()
-        return None
+        return Empty()
 
 
     async def InsertAnimeItem(self, request: InsertAnimeItemRequest, context: ServicerContext):
@@ -184,8 +189,12 @@ class MikananiSvcServicer(MikananiServiceServicer):
             # Insert meta into mysql
             mysql_conn = db_helper.get_mysql_conn()
             cursor = mysql_conn.cursor()
+            is_active: bool = True
+            if meta_info.isActive == -1:
+                is_active = False
+            
             isql = ("INSERT INTO `mikanani`.`anime_meta` (uid, name, is_active) "
-                    f"VALUES ({uid}, '{meta_info.name}', TRUE);")
+                    f"VALUES ({uid}, '{meta_info.name}', {is_active});")
             cursor.execute(isql)
             mysql_conn.commit()
 
@@ -206,7 +215,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             LOGGER.error(f"[InsertAnimeItem][name: {meta_info.name}] {e}: {traceback.format_exc()}")
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details("insert failed.")
-        return None
+        return Empty()
 
     
     async def DeleteAnimeItem(self, request: DeleteAnimeItemRequest, context: ServicerContext):
@@ -237,7 +246,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details(f"internal error when delete animeitem.")
         cursor.close()
-        return None
+        return Empty()
     
     async def DispatchDownloadTask(self, request, context: ServicerContext):
         try:
@@ -246,4 +255,4 @@ class MikananiSvcServicer(MikananiServiceServicer):
             LOGGER.error(f"[DispatchDownloadTask] {e}[{traceback.format_exc()}]")
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details(f"internal error when dispatch download task.")
-        return None
+        return Empty()
