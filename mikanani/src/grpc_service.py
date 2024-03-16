@@ -54,6 +54,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             cursor = conn.cursor()
             cursor.execute(sql)
             result = cursor.fetchall()
+            conn.commit()
             if result:
                 for uid, name, download_bitmap, is_active, tags in result:
                     meta_array.append(AnimeMeta(
@@ -117,7 +118,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 },
                 upsert=False,
             )
-            if result.upserted_id is None:
+            if result.matched_count != 1:
                 LOGGER.warning(f"[UpdateAnimeDoc]upsert failed for uid[{uid}]: {expected_update}")
                 context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
                 context.set_details(f"update failed.")
@@ -196,25 +197,26 @@ class MikananiSvcServicer(MikananiServiceServicer):
             isql = ("INSERT INTO `mikanani`.`anime_meta` (uid, name, is_active) "
                     f"VALUES ({uid}, '{meta_info.name}', {is_active});")
             cursor.execute(isql)
-            mysql_conn.commit()
 
             # Insert doc into mongodb
-            mongo_client = db_helper.get_mongo_client()
-            with mongo_client.start_session() as session:
-                with session.start_transaction():
-                    mongo_col = get_mongo_col_cursor()
-                    mongo_col.insert_one({
-                        "uid": Int64(uid),
-                        "rss_url": doc_info.rssUrl,
-                        "rule": doc_info.rule,
-                        "regex": doc_info.regex,
-                    }, session=session)
+            mongo_col = get_mongo_col_cursor()
+            mongo_col.update_one(
+                {"uid": Int64(uid)},
+                {
+                    "uid": Int64(uid),
+                    "rss_url": doc_info.rssUrl,
+                    "rule": doc_info.rule,
+                    "regex": doc_info.regex,   
+                },
+                upsert=True,
+            )
 
         except Exception as e:
             mysql_conn.rollback()
             LOGGER.error(f"[InsertAnimeItem][name: {meta_info.name}] {e}: {traceback.format_exc()}")
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details("insert failed.")
+        mysql_conn.commit()
         return Empty()
 
     
