@@ -147,7 +147,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 
                 usql = ("UPDATE `mikanani`.`anime_meta` "
                         f"SET name = {name}, "
-                        f"download_bitmap = {download_bitmap} "
+                        f"download_bitmap = {download_bitmap}, "
                         f"is_active = {is_active} " 
                         f"WHERE uid = {uid};")
                 cursor.execute(usql)
