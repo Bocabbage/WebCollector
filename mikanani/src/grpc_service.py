@@ -147,8 +147,8 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 
                 usql = ("UPDATE `mikanani`.`anime_meta` SET "
                         f"SET name = {name}, "
-                        f"download_bitmap = {download_bitmap}"
-                        f"is_active = {is_active}" 
+                        f"download_bitmap = {download_bitmap} "
+                        f"is_active = {is_active} " 
                         f"WHERE uid = {uid};")
                 cursor.execute(usql)
                 conn.commit()
@@ -184,7 +184,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             # Insert meta into mysql
             mysql_conn = db_helper.get_mysql_conn()
             cursor = mysql_conn.cursor()
-            isql = ("INSERT INTO `mikanani`.`anime_meta` (uid, name, is_active)"
+            isql = ("INSERT INTO `mikanani`.`anime_meta` (uid, name, is_active) "
                     f"VALUES ({uid}, '{meta_info.name}', TRUE);")
             cursor.execute(isql)
             mysql_conn.commit()
