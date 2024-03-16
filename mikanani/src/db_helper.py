@@ -44,4 +44,4 @@ def get_mongo_client() -> MongoClient:
     return mongo_client.client()
 
 def get_mysql_conn() -> MySQLConnection:
-    return mysql_conn.connect()
+    return mysql_conn.connection()
