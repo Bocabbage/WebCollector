@@ -3,6 +3,7 @@ import json
 from bson.int64 import Int64
 from db_helper import get_mongo_client, get_mysql_conn
 from configs import RabbitmqConfig, MongoDBConfig
+from logger import LOGGER
 
 class MikanamiAnimeDispatcher:
     def sqs_dispatch(self):
@@ -14,7 +15,9 @@ class MikanamiAnimeDispatcher:
         cursor.execute(sql)
         result = cursor.fetchall()
         if result:
-            uid_list = [Int64(uid) for uid in result]
+            uid_list = [x[0] for x in result]
+            uid_list = [Int64(uid) for uid in uid_list]
+        LOGGER.info(f"get uid list from meta-db: {uid_list}")
         
         mongo_client = get_mongo_client()
         mongo_db = mongo_client[MongoDBConfig['mikandb']]
