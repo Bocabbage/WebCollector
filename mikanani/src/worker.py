@@ -35,7 +35,7 @@ class MikanamiAnimeSubWorker:
             msg_dict: Optional[dict] = json.loads(message.body)
             # LOGGER.debug(f"msg_dict: {msg_dict}")
             tlist = self.job_obj.get_torrent_urls(msg_dict)
-            LOGGER.info("get_torrent_urls success.")
+            LOGGER.info(f"get_torrent_urls success, tlist: {tlist}.")
         except Exception as e:
             LOGGER.error(f"get_torrent_urls error: exception-{e}, {traceback.format_exc()}")
             # await message.reject()

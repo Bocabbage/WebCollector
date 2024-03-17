@@ -145,6 +145,7 @@ class RSSJob:
             file_path = os.path.join(qbit_dir, t_name)
             if os.path.exists(file_path):
             # filter out exist objs
+                LOGGER.debug(f"Exist filter out: {file_path}")
                 continue
             response = requests.get(t_url, proxies=self.proxies)
             if response.status_code != 200:
