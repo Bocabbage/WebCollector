@@ -40,7 +40,7 @@ class RSSJob:
             # name: str = rss_rules[AnimeMetaMapping.name]
             rss_url: str = rss_rules[AnimeDocMapping.rssUrl]
             rule_version: str = rss_rules[AnimeDocMapping.rule]
-            rule_regex: str = r"{}".format(AnimeDocMapping.regex)
+            rule_regex: str = r"{}".format(rss_rules[AnimeDocMapping.regex])
         except KeyError as e:
             not_found_key = e.args[0]
             raise RSSRuleFileError(
