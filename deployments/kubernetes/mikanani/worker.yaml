@@ -22,9 +22,14 @@ spec:
         envFrom:
         - secretRef:
             name: mikanani-config
-        command: ["python"]
-        args: ["main.py", "mikanani", "--mode", "sqs-worker"]
+        command: ["mikanani"]
+        args: ["--mode", "sqs-worker"]
         resources:
           limits:
             memory: "128Mi"
             cpu: "50m"
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP

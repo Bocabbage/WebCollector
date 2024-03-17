@@ -5,7 +5,7 @@ TestConfig: str = os.getenv('TESTCONFIG')
 
 LogConfig: Dict[str, Optional[str]] = {
     'log_dir': os.getenv('LOG_DIR', './logs'),
-    'log_level': os.getenv('LOG_LEVEL', 'INFO'),
+    'log_level': os.getenv('LOG_LEVEL', 'DEBUG'),
 }
 
 RSSConfig: Dict[str, str] = {
@@ -39,4 +39,15 @@ MongoDBConfig: dict = {
     'host': os.getenv('KAPIBARA_MONGODB_SVC_URL'),
     'mikandb': os.getenv('KAPIBARA_MONGODB_MIKANDB'),
     'mikancollection': os.getenv('KAPIBARA_MONGODB_MIKANCOLLECTION'),
+}
+
+MySQLConfig: dict = {
+    'host': os.getenv('MIKANANI_MYSQL_HOST'),
+    'user': os.getenv('MIKANANI_MYSQL_USER'),
+    'password': os.getenv('MIKANANI_MYSQL_PWD'),
+    'database': 'mikanani',
+}
+
+gRPCServerConfig: dict = {
+    'listenAddr': '[::]:50051',
 }

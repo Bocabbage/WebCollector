@@ -10,9 +10,10 @@ from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 # import base64
 from typing import Optional, List
-from .configs import ProxyConfig, QbitConfig
-from .logger import LOGGER
-from .errors import NoRSSYamlError, RSSRuleFileError, RSSRuleFileErrCode
+from configs import ProxyConfig, QbitConfig
+from logger import LOGGER
+from errors import NoRSSYamlError, RSSRuleFileError, RSSRuleFileErrCode
+from schema import AnimeDocMapping # , AnimeMetaMapping
 # from utils import get_url_by_name, get_magnet, download_obj
 
 
@@ -36,10 +37,10 @@ class RSSJob:
     def _get_torrent_urls(self, rss_rules: dict) -> List[str]:
         result_list = list()
         try:
-            name: str = rss_rules['name']
-            rss_url: str = rss_rules['rss_url']
-            rule_version: str = rss_rules['rule_version']
-            rule_regex: str = r"{}".format(rss_rules['rule_regex'])
+            # name: str = rss_rules[AnimeMetaMapping.name]
+            rss_url: str = rss_rules[AnimeDocMapping.rssUrl]
+            rule_version: str = rss_rules[AnimeDocMapping.rule]
+            rule_regex: str = r"{}".format(rss_rules[AnimeDocMapping.regex])
         except KeyError as e:
             not_found_key = e.args[0]
             raise RSSRuleFileError(
@@ -144,6 +145,7 @@ class RSSJob:
             file_path = os.path.join(qbit_dir, t_name)
             if os.path.exists(file_path):
             # filter out exist objs
+                LOGGER.debug(f"Exist filter out: {file_path}")
                 continue
             response = requests.get(t_url, proxies=self.proxies)
             if response.status_code != 200:

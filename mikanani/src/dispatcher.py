@@ -1,30 +1,31 @@
 import pika
 import json
-from pymongo import MongoClient
-from .configs import RabbitmqConfig, MongoDBConfig
+from bson.int64 import Int64
+from db_helper import get_mongo_client, get_mysql_conn
+from configs import RabbitmqConfig, MongoDBConfig
+from logger import LOGGER
 
 class MikanamiAnimeDispatcher:
     def sqs_dispatch(self):
         # Get expected-list in mongodb
-        mongo_client = MongoClient(MongoDBConfig['host'])
+        uid_list = list()
+        conn = get_mysql_conn()
+        sql = f"SELECT uid FROM `mikanani`.`anime_meta` WHERE is_active IS TRUE;"
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        if result:
+            uid_list = [x[0] for x in result]
+            uid_list = [Int64(uid) for uid in uid_list]
+        LOGGER.info(f"get uid list from meta-db: {uid_list}")
+        
+        mongo_client = get_mongo_client()
         mongo_db = mongo_client[MongoDBConfig['mikandb']]
         mongo_col = mongo_db[MongoDBConfig['mikancollection']]
 
-        query = { "isActive": True }
+        query = { "uid": {"$in": uid_list} }
 
         data_to_send = [
-            # {
-            #     "name": "sousou_no_frieren",
-            #     "rss_url": 'https://mikanani.me/RSS/Bangumi?bangumiId=3141&subgroupid=583',
-            #     "rule_version": "latest",
-            #     "rule_regex": '\[ANi\]\s+.*?\s+/\s+葬送的芙莉莲\s+-\s+(\d+)\s+\[1080P\]\[Baha\].*',
-            # },
-            # {
-            #     "name": "dungeon_meshi",
-            #     "rss_url": "https://mikanani.me/RSS/Bangumi?bangumiId=3240&subgroupid=382",
-            #     "rule_version": "latest",
-            #     "rule_regex": '【喵萌奶茶屋】★01月新番★\[迷宫饭 / Dungeon Meshi / Delicious in Dungeon\]\[(\d+)\]\[1080p\]\[简日双语\].*',
-            # }
             x for x in mongo_col.find(query, {"_id": 0})
         ]
 

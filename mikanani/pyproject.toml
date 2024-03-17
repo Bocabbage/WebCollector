@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools"]
+
+[project]
+name = "webcollector-mikanani"
+version = "0.1.0dev1"
+authors = [
+    { name = "Zhuofan Zhang", email = "zhangzhuofan97@gmail.com" }
+]
+requires-python = ">=3.10,<3.11"
+dynamic = ["dependencies"]
+
+# [tool.setuptools]
+# packages = ["mikanani", "common"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.scripts]
+mikanani = "main:mikanani_main"

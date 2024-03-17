@@ -17,8 +17,8 @@ spec:
             envFrom:
             - secretRef:
                 name: mikanani-config
-            command: ["python"]
-            args: ["main.py", "mikanani", "--mode", "sqs-dispatch"]
+            command: ["mikanani"]
+            args: ["--mode", "sqs-dispatch"]
             resources:
               limits:
                 memory: "128Mi"
