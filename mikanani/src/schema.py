@@ -6,6 +6,6 @@ class AnimeMetaMapping:
 
 class AnimeDocMapping:
     uid = "uid"
-    rssUrl = "rssUrl"
+    rssUrl = "rss_url"
     rule = "rule"
     regex = "regex"
