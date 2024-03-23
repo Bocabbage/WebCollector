@@ -29,9 +29,9 @@ class MikananiSvcServicer(MikananiServiceServicer):
     
     async def ListAnimeMeta(self, request: ListAnimeMetaRequest, context: ServicerContext):
         active_type_query_map = {
-            0: "",                           # All
-            1: "WHERE is_active is TRUE",    # Only active
-            2: "WHERE is_active is FALSE",   # Only inactive
+            1: "",                           # All
+            2: "WHERE is_active is TRUE",    # Only active
+            3: "WHERE is_active is FALSE",   # Only inactive
         }
         active_filter = active_type_query_map.get(request.statusFilter)
         if (active_filter is None or
