@@ -1,0 +1,192 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /helloworld/{name}:
+        get:
+            tags:
+                - Greeter
+            description: Sends a greeting
+            operationId: Greeter_SayHello
+            parameters:
+                - name: name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /newssub/v1/article/create:
+        post:
+            tags:
+                - Article
+            operationId: Article_CreateArticle
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.newssub.v1.CreateArticleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.newssub.v1.CreateArticleReply'
+    /newssub/v1/article/list:
+        get:
+            tags:
+                - Article
+            operationId: Article_ListArticle
+            parameters:
+                - name: start
+                  in: query
+                  schema:
+                    type: string
+                - name: end
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.newssub.v1.ListArticleReply'
+    /newssub/v1/article/{uid}:
+        get:
+            tags:
+                - Article
+            operationId: Article_GetArticle
+            parameters:
+                - name: uid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.newssub.v1.GetArticleReply'
+        put:
+            tags:
+                - Article
+            operationId: Article_UpdateArticle
+            parameters:
+                - name: uid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.newssub.v1.UpdateArticleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.newssub.v1.UpdateArticleReply'
+        delete:
+            tags:
+                - Article
+            operationId: Article_DeleteArticle
+            parameters:
+                - name: uid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.newssub.v1.DeleteArticleReply'
+components:
+    schemas:
+        api.newssub.v1.ArticalItem:
+            type: object
+            properties:
+                uid:
+                    type: string
+                title:
+                    type: string
+                content:
+                    type: string
+                tags:
+                    type: array
+                    items:
+                        type: string
+        api.newssub.v1.CreateArticleReply:
+            type: object
+            properties:
+                uid:
+                    type: string
+        api.newssub.v1.CreateArticleRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                content:
+                    type: string
+        api.newssub.v1.DeleteArticleReply:
+            type: object
+            properties: {}
+        api.newssub.v1.GetArticleReply:
+            type: object
+            properties:
+                article:
+                    $ref: '#/components/schemas/api.newssub.v1.ArticalItem'
+        api.newssub.v1.ListArticleReply:
+            type: object
+            properties:
+                articles:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.newssub.v1.ArticalItem'
+        api.newssub.v1.UpdateArticleReply:
+            type: object
+            properties: {}
+        api.newssub.v1.UpdateArticleRequest:
+            type: object
+            properties:
+                uid:
+                    type: string
+                title:
+                    type: string
+                content:
+                    type: string
+                tags:
+                    type: array
+                    items:
+                        type: string
+        helloworld.v1.HelloReply:
+            type: object
+            properties:
+                message:
+                    type: string
+            description: The response message containing the greetings
+tags:
+    - name: Article
+    - name: Greeter
+      description: The greeting service definition.
