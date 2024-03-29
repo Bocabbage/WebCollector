@@ -4,18 +4,21 @@ import (
 	"context"
 
 	pb "news-subscriber-bff/api/newssub/v1"
+	"news-subscriber-bff/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 type ArticleService struct {
 	pb.UnimplementedArticleServer
-	log *log.Helper
+	article *biz.ArticleUsecase
+	log     *log.Helper
 }
 
-func NewArticleService(logger log.Logger) *ArticleService {
+func NewArticleService(article *biz.ArticleUsecase, logger log.Logger) *ArticleService {
 	return &ArticleService{
-		log: log.NewHelper(logger),
+		article: article,
+		log:     log.NewHelper(logger),
 	}
 }
 
