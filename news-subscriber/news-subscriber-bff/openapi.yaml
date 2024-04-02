@@ -30,33 +30,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /newssub/v1/article/list:
-        get:
-            tags:
-                - Article
-            operationId: Article_ListArticle
-            parameters:
-                - name: start
-                  in: query
-                  schema:
-                    type: string
-                - name: end
-                  in: query
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListArticleReply'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /newssub/v1/article/{uid}:
         get:
             tags:
@@ -127,6 +100,33 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DeleteArticleReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /newssub/v1/list-article:
+        get:
+            tags:
+                - Article
+            operationId: Article_ListArticle
+            parameters:
+                - name: start
+                  in: query
+                  schema:
+                    type: string
+                - name: end
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListArticleReply'
                 default:
                     description: Default error response
                     content:

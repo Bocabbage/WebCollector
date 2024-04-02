@@ -39,7 +39,7 @@ func RegisterArticleHTTPServer(s *http.Server, srv ArticleHTTPServer) {
 	r.PUT("/newssub/v1/article/{uid}", _Article_UpdateArticle0_HTTP_Handler(srv))
 	r.DELETE("/newssub/v1/article/{uid}", _Article_DeleteArticle0_HTTP_Handler(srv))
 	r.GET("/newssub/v1/article/{uid}", _Article_GetArticle0_HTTP_Handler(srv))
-	r.GET("/newssub/v1/article/list", _Article_ListArticle0_HTTP_Handler(srv))
+	r.GET("/newssub/v1/list-article", _Article_ListArticle0_HTTP_Handler(srv))
 }
 
 func _Article_CreateArticle0_HTTP_Handler(srv ArticleHTTPServer) func(ctx http.Context) error {
@@ -209,7 +209,7 @@ func (c *ArticleHTTPClientImpl) GetArticle(ctx context.Context, in *GetArticleRe
 
 func (c *ArticleHTTPClientImpl) ListArticle(ctx context.Context, in *ListArticleRequest, opts ...http.CallOption) (*ListArticleReply, error) {
 	var out ListArticleReply
-	pattern := "/newssub/v1/article/list"
+	pattern := "/newssub/v1/list-article"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationArticleListArticle))
 	opts = append(opts, http.PathTemplate(pattern))

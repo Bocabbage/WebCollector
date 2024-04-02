@@ -72,6 +72,7 @@ func (rp *articleRepo) GetArticle(ctx context.Context, uid int64) (*biz.Article,
 		Title:      p.Title,
 		CreateTime: p.CreateTime,
 		UpdateTime: p.UpdateTime,
+		Tags:       p.Tags,
 	}, nil
 }
 

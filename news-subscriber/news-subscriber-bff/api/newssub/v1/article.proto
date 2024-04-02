@@ -34,7 +34,7 @@ service Article {
 	}
 	rpc ListArticle (ListArticleRequest) returns (ListArticleReply) {
 		option (google.api.http) = {
-			get: "/newssub/v1/article/list"
+			get: "/newssub/v1/list-article"
 		};
 	}
 }

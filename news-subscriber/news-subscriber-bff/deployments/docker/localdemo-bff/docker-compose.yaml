@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: ../../../
+      dockerfile: ./Dockerfile
+    restart: on-failure
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    depends_on:
+      - "mysqldb"
+    networks:
+      - "kapibara-testnet"
+    container_name: "news-subscriber-bff"
+  mysqldb:
+    image: "mysql:latest"
+    container_name: "db-mysql0"
+    build:
+      context: .
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "test_kapibara_root_pwd"
+      MYSQL_DATABASE: "article_db0"
+      MYSQL_USER: "test_kapibara"
+      MYSQL_PASSWORD: "test_kapibara_pwd"
+    networks:
+      - "kapibara-testnet"
+    volumes:
+      - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
+networks:
+  kapibara-testnet:
+    driver: "bridge"
