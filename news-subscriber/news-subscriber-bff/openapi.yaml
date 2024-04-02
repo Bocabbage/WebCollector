@@ -15,7 +15,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.newssub.v1.CreateArticleRequest'
+                            $ref: '#/components/schemas/CreateArticleRequest'
                 required: true
             responses:
                 "200":
@@ -23,7 +23,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.newssub.v1.CreateArticleReply'
+                                $ref: '#/components/schemas/CreateArticleReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /newssub/v1/article/list:
         get:
             tags:
@@ -44,7 +50,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.newssub.v1.ListArticleReply'
+                                $ref: '#/components/schemas/ListArticleReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /newssub/v1/article/{uid}:
         get:
             tags:
@@ -62,7 +74,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.newssub.v1.GetArticleReply'
+                                $ref: '#/components/schemas/GetArticleReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
         put:
             tags:
                 - Article
@@ -77,7 +95,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.newssub.v1.UpdateArticleRequest'
+                            $ref: '#/components/schemas/UpdateArticleRequest'
                 required: true
             responses:
                 "200":
@@ -85,7 +103,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.newssub.v1.UpdateArticleReply'
+                                $ref: '#/components/schemas/UpdateArticleReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
         delete:
             tags:
                 - Article
@@ -102,10 +126,16 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.newssub.v1.DeleteArticleReply'
+                                $ref: '#/components/schemas/DeleteArticleReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
-        api.newssub.v1.ArticalItem:
+        ArticleItem:
             type: object
             properties:
                 uid:
@@ -118,37 +148,65 @@ components:
                     type: array
                     items:
                         type: string
-        api.newssub.v1.CreateArticleReply:
+        CreateArticleReply:
             type: object
             properties:
                 uid:
                     type: string
-        api.newssub.v1.CreateArticleRequest:
+        CreateArticleRequest:
             type: object
             properties:
                 title:
                     type: string
                 content:
                     type: string
-        api.newssub.v1.DeleteArticleReply:
+                tags:
+                    type: array
+                    items:
+                        type: string
+        DeleteArticleReply:
             type: object
             properties: {}
-        api.newssub.v1.GetArticleReply:
+        GetArticleReply:
             type: object
             properties:
                 article:
-                    $ref: '#/components/schemas/api.newssub.v1.ArticalItem'
-        api.newssub.v1.ListArticleReply:
+                    $ref: '#/components/schemas/ArticleItem'
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        ListArticleReply:
             type: object
             properties:
                 articles:
                     type: array
                     items:
-                        $ref: '#/components/schemas/api.newssub.v1.ArticalItem'
-        api.newssub.v1.UpdateArticleReply:
+                        $ref: '#/components/schemas/ArticleItem'
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        UpdateArticleReply:
             type: object
             properties: {}
-        api.newssub.v1.UpdateArticleRequest:
+        UpdateArticleRequest:
             type: object
             properties:
                 uid:

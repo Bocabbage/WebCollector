@@ -39,7 +39,7 @@ service Article {
 	}
 }
 
-message ArticalItem {
+message ArticleItem {
     int64 uid = 1;
     string title = 2;
     string content = 3;
@@ -49,6 +49,7 @@ message ArticalItem {
 message CreateArticleRequest {
 	string title = 1 [(validate.rules).string = {min_len: 5, max_len: 50}];
 	string content = 2;
+	repeated string tags = 3;
 }
 message CreateArticleReply {
 	int64 uid = 1;
@@ -75,7 +76,7 @@ message GetArticleRequest {
 	int64 uid = 1;
 }
 message GetArticleReply {
-	ArticalItem article = 1;
+	ArticleItem article = 1;
 }
 
 message ListArticleRequest {
@@ -83,5 +84,5 @@ message ListArticleRequest {
 	int64 end = 2;
 }
 message ListArticleReply {
-	repeated ArticalItem articles = 1;
+	repeated ArticleItem articles = 1;
 }

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.20.3
-// source: newssub/v1/article.proto
+// source: api/newssub/v1/article.proto
 
 package v1
 
@@ -253,5 +253,5 @@ var Article_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "newssub/v1/article.proto",
+	Metadata: "api/newssub/v1/article.proto",
 }
