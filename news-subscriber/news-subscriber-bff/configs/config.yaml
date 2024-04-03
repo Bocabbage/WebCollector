@@ -5,6 +5,9 @@ server:
   grpc:
     addr: 0.0.0.0:9000
     timeout: 1s
+  tls:
+    cert: /app/configs/cert/bocabbage.test.crt
+    key: /app/configs/cert/bocabbage.testserver.key
 data:
   database:
     driver: mysql

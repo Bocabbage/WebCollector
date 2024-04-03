@@ -6,6 +6,7 @@ import (
 	pb "news-subscriber-bff/api/newssub/v1"
 	"news-subscriber-bff/internal/biz"
 	"news-subscriber-bff/internal/conf"
+	"news-subscriber-bff/internal/data/ent"
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-kratos/kratos/v2/log"
@@ -76,7 +77,12 @@ func (s *ArticleService) GetArticle(ctx context.Context, req *pb.GetArticleReque
 	article, err := s.articleUc.Get(ctx, req.Uid)
 	if err != nil {
 		s.log.Error("[get][error]uid: %d, error: %v", req.Uid, err)
-		return nil, err
+		// return nil, err
+		// TODO: enhance error-code check & use
+		if ent.IsNotFound(err) {
+			return nil, pb.ErrorArticleNotFound("uid: %d article not in database", req.Uid)
+		}
+		return nil, pb.ErrorInternalError("uid: %d gather failed - internal error", req.Uid)
 	}
 	return &pb.GetArticleReply{Article: &pb.ArticleItem{
 		Uid:     article.Uid,

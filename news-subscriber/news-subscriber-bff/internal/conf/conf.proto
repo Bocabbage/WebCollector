@@ -22,8 +22,13 @@ message Server {
     string addr = 2;
     google.protobuf.Duration timeout = 3;
   }
+  message TLS {
+    string cert = 1;
+    string key = 2;
+  }
   HTTP http = 1;
   GRPC grpc = 2;
+  TLS tls = 3;
 }
 
 message Data {

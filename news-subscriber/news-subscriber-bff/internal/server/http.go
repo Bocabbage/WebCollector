@@ -1,6 +1,7 @@
 package server
 
 import (
+	"crypto/tls"
 	v1 "news-subscriber-bff/api/newssub/v1"
 	"news-subscriber-bff/internal/conf"
 	"news-subscriber-bff/internal/service"
@@ -30,6 +31,15 @@ func NewHTTPServer(c *conf.Server, article *service.ArticleService, logger log.L
 	if c.Http.Timeout != nil {
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
+	if c.Tls.Cert != "" && c.Tls.Key != "" {
+		cert, err := tls.LoadX509KeyPair(c.Tls.Cert, c.Tls.Key)
+		if err != nil {
+			log.NewHelper(logger).Warnf("Tls init failed: %v", err)
+		} else {
+			opts = append(opts, http.TLSConfig(&tls.Config{Certificates: []tls.Certificate{cert}}))
+		}
+	}
+
 	srv := http.NewServer(opts...)
 	v1.RegisterArticleHTTPServer(srv, article)
 	return srv

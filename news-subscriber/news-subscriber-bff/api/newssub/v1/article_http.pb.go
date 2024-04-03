@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.7.3
 // - protoc             v3.20.3
-// source: api/newssub/v1/article.proto
+// source: newssub/v1/article.proto
 
 package v1
 

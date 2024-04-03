@@ -21,7 +21,8 @@ WORKDIR /app
 EXPOSE 8000
 EXPOSE 9000
 
+# TODO: optimized: read configs when start the pod
 # VOLUME /data/conf
 COPY ./configs /app/configs
 
-CMD ["./news-subscriber-bff", "-conf", "./configs"]
+CMD ["./news-subscriber-bff", "-conf", "/app/configs/config.yaml"]
