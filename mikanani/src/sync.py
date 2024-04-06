@@ -1,5 +1,6 @@
 import re
 import os
+import time
 import traceback
 from bson.int64 import Int64
 from db_helper import get_mongo_client, get_mysql_conn
@@ -26,15 +27,21 @@ class MikanamiAnimeSync:
         to_update_animes = dict()
         # TODO: enhance, a little tricky
         regex_pattern = re.compile(r"\b\d{2}\b")
+        current_time = time.time()
         for uid, info in anime_infos.items():
             target_dir = os.path.join(QbitConfig["nfs_media_file_dir"], f"medias/{uid}")
             num_set = set()
             
             files = os.listdir(target_dir)
-            files = [entry for entry in files if os.path.isfile(os.path.join(target_dir, entry))]
+            files = [entry for entry in files 
+                     if (
+                         os.path.isfile(os.path.join(target_dir, entry)) and 
+                         os.path.getmtime(os.path.join(target_dir, entry)) < current_time - 30 * 60
+                        )
+                    ]
             for file in files:
                 if match_obj := regex_pattern.search(file):
-                    num_set.add(int(match_obj.groups(0)))
+                    num_set.add(int(match_obj.group(0)))
             curr_bitmap = numset2bitmap(num_set)
             if curr_bitmap != info.get("download_bitmap"):
                 to_update_animes[uid] = curr_bitmap
