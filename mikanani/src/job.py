@@ -1,19 +1,20 @@
 import os
 import re
+import glob
 import xmltodict
 import traceback
 import requests
-import yaml
-import qbittorrent
+import qbittorrentapi
 from requests import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 # import base64
-from typing import Optional, List
+from typing import Optional, List, Set
 from configs import ProxyConfig, QbitConfig
 from logger import LOGGER
 from errors import NoRSSYamlError, RSSRuleFileError, RSSRuleFileErrCode
 from schema import AnimeDocMapping # , AnimeMetaMapping
+import db_helper
 # from utils import get_url_by_name, get_magnet, download_obj
 
 
@@ -33,8 +34,26 @@ class RSSJob:
                 'http': f"http://{ProxyConfig['proxy_addr']}:{ProxyConfig['proxy_port']}",
                 'https': f"http://{ProxyConfig['proxy_addr']}:{ProxyConfig['proxy_port']}",
             }
+
+    
+    @classmethod
+    def _clean_dir(cls, dir: str) -> None:
+        pattern = os.path.join(dir, '*')
+        files = glob.glob(pattern)
+        for filename in files:
+            os.remove(filename)
+
         
-    def _get_torrent_urls(self, rss_rules: dict) -> List[str]:
+    @classmethod
+    def _bitmap2numset(cls, bitmap: int) -> Set[int]:
+        result: Set[int] = set()
+        for i in range(64):
+            if bitmap & (1 << i):
+                result.add(i)
+        return result
+
+
+    def _get_torrent_urls(self, rss_rules: dict) -> List[tuple]:
         result_list = list()
         try:
             # name: str = rss_rules[AnimeMetaMapping.name]
@@ -86,7 +105,7 @@ class RSSJob:
                             latest_number = number
                             latest_url = item["enclosure"]["@url"]
                 if latest_url is not None:
-                    result_list.append(latest_url)
+                    result_list.append((latest_number, latest_url))
             except Exception as e:
                 raise RSSRuleFileError(
                     message=f"{RSSRuleFileErrCode.XML_PARSE_ERROR.name}: {traceback.format_exc()}",
@@ -101,8 +120,9 @@ class RSSJob:
                 for item in target_items.items():
                     title = item['title']
                     if match_obj := regex_pattern.match(title):
-                        latest_url = item["enclosure"]["@url"]
-                        result_list.append(latest_url)
+                        number = int(match_obj.groups(1)[0])
+                        url = item["enclosure"]["@url"]
+                        result_list.append((number, url))
             except Exception as e:
                 raise RSSRuleFileError(
                     message=f"{RSSRuleFileErrCode.XML_PARSE_ERROR.name}: {traceback.format_exc()}",
@@ -119,84 +139,74 @@ class RSSJob:
     
     def get_torrent_urls(self, input_configs: Optional[dict] = None) -> Optional[List[str]]:
         result: List[str] = list()
-        
-        if input_configs is None: # direct mode
-            for rootdir, _, files in os.walk(self.config_dir):
-                for file in files:
-                    if file == 'example.yaml':
-                        continue
-                    with open(os.path.join(rootdir, file), 'r', encoding='utf-8') as ifile:
-                        rss_rules = yaml.safe_load(ifile)
-                        if torrents := self._get_torrent_urls(rss_rules):
-                            result.extend(torrents)
-        else:
-            for rss_rules in input_configs:
-                if torrents := self._get_torrent_urls(rss_rules):
-                    result.extend(torrents)
+        for rss_rules in input_configs:
+            if torrents := self._get_torrent_urls(rss_rules):
+                result.extend(torrents)
         return result
+
     
-    def send_task_to_qbit(self, torrent_url_lists: List[str]) -> List[str]:
+    def send_task_to_qbit(self, torrent_url_infos: dict) -> None:
+        r'''
+            torrent_url_infos: {
+                uid: str
+                tlist: List[(int, str)] -- pair of (episode, torrent_url)
+            }
+        '''
         qbit_dir = QbitConfig['torrent_file_dir']
         os.makedirs(qbit_dir, exist_ok=True)
         
+        uid: str = torrent_url_infos.get("uid")
+        tlist: list = torrent_url_infos.get("tlist")
+        
+        # Get downloaded list from mysql
+        qsql = (f"SELECT download_bitmap FROM `mikanani`.`anime_meta` WHERE uid = {uid};")
+        conn = db_helper.get_mysql_conn()
+        cursor = conn.cursor()
+        cursor.execute(qsql)
+        result = cursor.fetchall()
+        
+        if not result:
+            LOGGER.warning(f"uid[{uid}] not exist in db but sent from job. Ignored")
+            return
+        downloaded_episodes = self._bitmap2numset(result[0][0])
+        
         expected_source = list()
-        for t_url in torrent_url_lists:
+        for episode, t_url in tlist:
+            # Ignore downloaded item(s)
+            if episode in downloaded_episodes:
+                continue
+
             t_name = os.path.basename(t_url)
             file_path = os.path.join(qbit_dir, t_name)
-            if os.path.exists(file_path):
-            # filter out exist objs
-                LOGGER.debug(f"Exist filter out: {file_path}")
-                continue
             response = requests.get(t_url, proxies=self.proxies)
             if response.status_code != 200:
-                LOGGER.warning(f"torrent-file download failed: {t_url}")
+                LOGGER.error(f"torrent-file download failed:[uid: {uid}, episode: {episode}, url: {t_url}]")
                 continue
             with open(file_path, 'wb') as ofile:
                 ofile.write(response.content)
             expected_source.append(file_path)
 
-        # [todo] clean failed-torrents
         if expected_source:
             torrent_list = [open(f, 'rb') for f in expected_source]
-            media_path = QbitConfig['media_file_dir']
-            qb_cli = qbittorrent.Client(QbitConfig['qbit_addr'])
-            res = qb_cli.login(username=QbitConfig['username'], password=QbitConfig['password'])
-            LOGGER.debug(f"login status: {res}")
-            qb_cli.download_from_file(torrent_list, savepath=media_path)
+            conn_info = dict(
+                host=QbitConfig['qbit_addr'],
+                port=int(QbitConfig['qbit_port']),
+                username=QbitConfig['username'],
+                password=QbitConfig['password'],
+            )
+            try:
+                # Call Qbittorrent API for downloading
+                with qbittorrentapi.Client(**conn_info) as qbt_client:
+                    if qbt_client.torrents_add(
+                        torrent_files=torrent_list, 
+                        save_path=os.path.join(QbitConfig['media_file_dir'], f"{uid}/")
+                    ) == "Ok.":
+                        LOGGER.info(f"[daily-send][SUCCESS][uid: {uid}, counts: {len(expected_source)}]")
+                    else:
+                        LOGGER.error(f"[daily-send][FAILED][uid: {uid}, task: {torrent_list}] Qbittorrent API return not OK.")
+                # Finish download, clean torrent files.
+                self._clean_dir(qbit_dir)
+            except Exception as e:
+                LOGGER.error(f"[daily-send][FAILED][uid: {uid}, task: {torrent_list}] Exception: {e}, traceback: {traceback.format_exc()}")
         else:
-            LOGGER.warning(f"No new media file to download.")
-            
-        return expected_source
-
-# [todo] implement
-class CleanJob:
-    pass
-
-# [deprecated]
-# class JobBase:
-#     def __init__(
-#         self,
-#         target_animes: dict[Optional[list]],
-#         save_path: str,
-#     ):
-#         r'''
-#             target_animes:
-#             {
-#                 "anime_name1": ["source1", "source2", ...],
-#                 "anime_name1": None (Find the default one)
-#             }
-#         '''
-#         self.target_animes = target_animes
-#         self.save_path = save_path
-
-#     def run(self):
-#         for anime_name, source_list in self.target_animes.items():
-#             try:
-#                 url_route = get_url_by_name(anime_name)
-#                 magnet = get_magnet(url_route, source_list)
-#                 save_path = os.path.join(self.save_path, anime_name)
-
-#                 if not download_obj(magnet, save_path):
-#                     LOGGER.error(f"[{anime_name}] send task to qbittorent failed.")
-#             except Exception as e:
-#                 LOGGER.error(f"[{anime_name}] download failed, exception: {e}")
+            LOGGER.debug(f"[daily-send][IGNORED]No new media file to download for uid:{uid}.")

@@ -15,36 +15,27 @@ class MikanamiAnimeSubWorker:
     def __init__(self):
         config_path = f"{os.path.dirname(os.path.abspath(__file__))}/../config/media"
         self.job_obj: RSSJob = RSSJob(config_path)
-    
-    def run(self):
-        try:
-            tlist = self.job_obj.get_torrent_urls()
-            LOGGER.info("get_torrent_urls success.")
-        except Exception as e:
-            LOGGER.error(f"get_torrent_urls error: exception-{e}, {traceback.format_exc()}")
-        
-        try:
-            expected_sources = self.job_obj.send_task_to_qbit(tlist)
-            LOGGER.info(f"send_task_to_qbit success, new files number: {len(expected_sources)}.")
-        except Exception as e:
-            LOGGER.error(f"send_task_to_qbit error: exception-{e}, {traceback.format_exc()}")
-    
+ 
     async def _sqs_consume_callback(self, message: aio_pika.IncomingMessage):
         tlist: List[str] = list()
         try:
             msg_dict: Optional[dict] = json.loads(message.body)
-            # LOGGER.debug(f"msg_dict: {msg_dict}")
-            tlist = self.job_obj.get_torrent_urls(msg_dict)
-            LOGGER.info(f"get_torrent_urls success, tlist: {tlist}.")
+            uid = msg_dict.get("uid")
+            if uid:
+                tlist = self.job_obj.get_torrent_urls(msg_dict)
+                LOGGER.info(f"get_torrent_urls success, tlist: {tlist}.")
+            else:
+                LOGGER.warning(f"empty uid for {msg_dict}, ignored.")
         except Exception as e:
             LOGGER.error(f"get_torrent_urls error: exception-{e}, {traceback.format_exc()}")
             # await message.reject()
             tlist = list()
-            
         # await message.ack()
         
         try:
-            expected_sources = self.job_obj.send_task_to_qbit(tlist)
+            expected_sources = self.job_obj.send_task_to_qbit({
+                "uid": uid, "tlist": tlist
+            })
             LOGGER.info(f"send_task_to_qbit success, new files number: {len(expected_sources)}.")
         except Exception as e:
             LOGGER.error(f"send_task_to_qbit error: exception-{e}, {traceback.format_exc()}")
@@ -75,26 +66,6 @@ class MikanamiAnimeSubWorker:
             LOGGER.info("rabbitmq channel/conn closed.")
             # raise
 
-
-# class MongoDBOpsWorker:
-#     def __init__(self):
-#         self.listen_addr = gRPCServerConfig["listenAddr"]
-
-#     async def grpc_server(self):
-#         try:
-#             server = grpc.aio.server()
-#             mongodb_crud_pb2_grpc.add_MikananiMongoCrudServicer_to_server(
-#                 mongodb_crud.MikananiMongoDBCrud(),
-#                 server,
-#             )
-#             server.add_insecure_port(self.listen_addr)
-#             LOGGER.info(f"mongodb grpc server: start serve at {self.listen_addr}")
-#             await server.start()
-#             await server.wait_for_termination()
-#         except Exception:
-#             # TODO: enhance graceful cancel
-#             LOGGER.info("mongodb grpc server has been cancelled.")
-#             await server.stop(None)
             
 class MiakananigRPCSvcWorker:
     def __init__(self):

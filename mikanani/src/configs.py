@@ -14,6 +14,7 @@ RSSConfig: Dict[str, str] = {
 
 QbitConfig: Dict[str, str] = {
     'qbit_addr': os.getenv('QBIT_ADDR'),
+    'qbit_port': os.getenv('QBIT_PORT', 8080),
     'torrent_file_dir': os.getenv('TORRENT_FILE_DIR', './'),
     'media_file_dir': os.getenv('MEDIA_FILE_DIR', './'),
     'username': os.getenv('QBIT_USER'),

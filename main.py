@@ -41,10 +41,8 @@ def mikanani_main(args: List[str]):
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default="direct")
     args = parser.parse_args(args)
-    
-    if args.mode == "direct":
-        MikanamiAnimeSubWorker().run()
-    elif args.mode == "sqs-worker":
+
+    if args.mode == "sqs-worker":
         asyncio.run(_mikanani_async_main())
     elif args.mode == "sqs-dispatch":
         MikanamiAnimeDispatcher().sqs_dispatch()
