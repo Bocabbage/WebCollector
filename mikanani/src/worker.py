@@ -17,28 +17,30 @@ class MikanamiAnimeSubWorker:
         self.job_obj: RSSJob = RSSJob(config_path)
  
     async def _sqs_consume_callback(self, message: aio_pika.IncomingMessage):
-        tlist: List[str] = list()
-        try:
-            msg_dict: Optional[dict] = json.loads(message.body)
-            uid = msg_dict.get("uid")
-            if uid:
-                tlist = self.job_obj.get_torrent_urls(msg_dict)
-                LOGGER.info(f"get_torrent_urls success, tlist: {tlist}.")
-            else:
-                LOGGER.warning(f"empty uid for {msg_dict}, ignored.")
-        except Exception as e:
-            LOGGER.error(f"get_torrent_urls error: exception-{e}, {traceback.format_exc()}")
-            # await message.reject()
-            tlist = list()
-        # await message.ack()
-        
-        try:
-            expected_sources = self.job_obj.send_task_to_qbit({
-                "uid": uid, "tlist": tlist
-            })
-            LOGGER.info(f"send_task_to_qbit success, new files number: {len(expected_sources)}.")
-        except Exception as e:
-            LOGGER.error(f"send_task_to_qbit error: exception-{e}, {traceback.format_exc()}")
+        msg_dict_list: List[dict] = json.loads(message.body)
+        for entry in msg_dict_list:
+            tlist: List[str] = list()
+            try:
+                uid = entry.get("uid")
+                if uid:
+                    tlist = self.job_obj.get_torrent_urls(entry)
+                    LOGGER.info(f"get_torrent_urls success, tlist: {tlist}.")
+                else:
+                    LOGGER.warning(f"empty uid for {entry}, ignored.")
+                    continue
+            except Exception as e:
+                LOGGER.error(f"get_torrent_urls error: exception-{e}, {traceback.format_exc()}")
+                # await message.reject()
+                continue
+            # await message.ack()
+            
+            try:
+                self.job_obj.send_task_to_qbit({
+                    "uid": uid, "tlist": tlist
+                })
+                LOGGER.info(f"send_task_to_qbit success.")
+            except Exception as e:
+                LOGGER.error(f"send_task_to_qbit error: exception-{e}, {traceback.format_exc()}")
     
             
     async def sqs_async_run(self):

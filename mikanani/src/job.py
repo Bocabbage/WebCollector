@@ -15,6 +15,7 @@ from logger import LOGGER
 from errors import NoRSSYamlError, RSSRuleFileError, RSSRuleFileErrCode
 from schema import AnimeDocMapping # , AnimeMetaMapping
 import db_helper
+from utils import bitmap2numset
 # from utils import get_url_by_name, get_magnet, download_obj
 
 
@@ -42,15 +43,6 @@ class RSSJob:
         files = glob.glob(pattern)
         for filename in files:
             os.remove(filename)
-
-        
-    @classmethod
-    def _bitmap2numset(cls, bitmap: int) -> Set[int]:
-        result: Set[int] = set()
-        for i in range(64):
-            if bitmap & (1 << i):
-                result.add(i)
-        return result
 
 
     def _get_torrent_urls(self, rss_rules: dict) -> List[tuple]:
@@ -137,11 +129,10 @@ class RSSJob:
         return result_list
             
     
-    def get_torrent_urls(self, input_configs: Optional[dict] = None) -> Optional[List[str]]:
+    def get_torrent_urls(self, input_config: dict = None) -> Optional[List[str]]:
         result: List[str] = list()
-        for rss_rules in input_configs:
-            if torrents := self._get_torrent_urls(rss_rules):
-                result.extend(torrents)
+        if torrents := self._get_torrent_urls(input_config):
+            result.extend(torrents)
         return result
 
     
@@ -168,7 +159,7 @@ class RSSJob:
         if not result:
             LOGGER.warning(f"uid[{uid}] not exist in db but sent from job. Ignored")
             return
-        downloaded_episodes = self._bitmap2numset(result[0][0])
+        downloaded_episodes = bitmap2numset(result[0][0])
         
         expected_source = list()
         for episode, t_url in tlist:
@@ -199,7 +190,7 @@ class RSSJob:
                 with qbittorrentapi.Client(**conn_info) as qbt_client:
                     if qbt_client.torrents_add(
                         torrent_files=torrent_list, 
-                        save_path=os.path.join(QbitConfig['media_file_dir'], f"{uid}/")
+                        save_path=os.path.join(QbitConfig['media_file_dir'], f"medias/{uid}/")
                     ) == "Ok.":
                         LOGGER.info(f"[daily-send][SUCCESS][uid: {uid}, counts: {len(expected_source)}]")
                     else:

@@ -5,6 +5,7 @@ import argparse
 from typing import List
 from worker import MikanamiAnimeSubWorker, MiakananigRPCSvcWorker
 from dispatcher import MikanamiAnimeDispatcher
+from sync import MikanamiAnimeSync
 from logger import LOGGER
 
 def signal_handler(tasks: List[asyncio.Task], sig, frame):
@@ -45,3 +46,5 @@ def mikanani_main():
         asyncio.run(_mikanani_async_main())
     elif args.mode == "sqs-dispatch":
         MikanamiAnimeDispatcher().sqs_dispatch()
+    elif args.mode == "sync":
+        MikanamiAnimeSync().sync()

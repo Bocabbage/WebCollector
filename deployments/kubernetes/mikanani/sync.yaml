@@ -1,25 +1,33 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: mikanani-dispatcher
+  name: mikanani-sync
   namespace: web-general
 spec:
-  schedule: "0 3 * * *"
+  schedule: "0 6 * * *"
   jobTemplate:
     spec:
       template:
         spec:
           restartPolicy: OnFailure
           containers:
-          - name: mikanani-dispatcher
+          - name: mikanani-sync
             image: <DOCKER_HUB_REPO>/<MikananiImage>
             imagePullPolicy: Never
+            volumeMounts:
+            - mountPath: /mnt/nfs
+              name: nfs-volume
             envFrom:
             - secretRef:
                 name: mikanani-config
             command: ["mikanani"]
-            args: ["--mode", "sqs-dispatch"]
+            args: ["--mode", "sync"]
             resources:
               limits:
                 memory: "128Mi"
                 cpu: "50m"
+          volumes:
+          - name: nfs-volume
+            nfs:
+              server: <NFS_SERVER_IP>
+              path: <MIKANANI_NFS_PATH>
