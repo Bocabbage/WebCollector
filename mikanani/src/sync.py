@@ -58,7 +58,7 @@ class MikanamiAnimeSync:
                             f"WHERE uid = {uid};")
                     cursor = conn.cursor()
                     cursor.execute(usql)
-                conn.commit()
-                LOGGER.info("[Sync][SUCCESS]")
+                    conn.commit()
+                    LOGGER.info(f"[Sync][SUCCESS]: uid:{uid} bitmap to {bitmap}.")
             except Exception as e:
                 LOGGER.error(f"[Sync][FAILED] Exception {e}: {traceback.format_exc()}")
