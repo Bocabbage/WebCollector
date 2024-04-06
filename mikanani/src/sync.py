@@ -21,29 +21,20 @@ class MikanamiAnimeSync:
             return
 
         for uid, download_bitmap in result:
-            anime_infos.setdefault(uid, {'downloaded_bitmap': download_bitmap})
-
-        mongo_client = get_mongo_client()
-        mongo_db = mongo_client[MongoDBConfig['mikandb']]
-        mongo_col = mongo_db[MongoDBConfig['mikancollection']]
-
-        query = { "uid": {"$in": [ Int64(uid) for uid in anime_infos.keys() ]} }
-
-        doc_data = [x for x in mongo_col.find(query, {"_id": 0})]
-        for doc in doc_data:
-            anime_infos[int(doc["uid"])]["regex"] = doc.get("regex")
+            anime_infos.setdefault(uid, {'download_bitmap': download_bitmap})
         
         to_update_animes = dict()
+        # TODO: enhance, a little tricky
+        regex_pattern = re.compile(r"\b\d{2}\b")
         for uid, info in anime_infos.items():
             target_dir = os.path.join(QbitConfig["nfs_media_file_dir"], f"medias/{uid}")
             num_set = set()
             
             files = os.listdir(target_dir)
             files = [entry for entry in files if os.path.isfile(os.path.join(target_dir, entry))]
-            regex_pattern = re.compile(info.get("regex"))
             for file in files:
-                if match_obj := regex_pattern.match(file):
-                    num_set.add(int(match_obj.groups(1)[0]))
+                if match_obj := regex_pattern.search(file):
+                    num_set.add(int(match_obj.groups(0)))
             curr_bitmap = numset2bitmap(num_set)
             if curr_bitmap != info.get("download_bitmap"):
                 to_update_animes[uid] = curr_bitmap
