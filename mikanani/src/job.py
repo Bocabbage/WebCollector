@@ -86,6 +86,10 @@ class RSSJob:
         if rule_version == 'latest':
             try:
                 target_items: list = rss_xml_dict['rss']['channel']['item']
+                # Robust enhance
+                if isinstance(target_items, dict):
+                    target_items = [target_items]
+                
                 latest_number: int = -1
                 latest_url: Optional[str] = None
                 
