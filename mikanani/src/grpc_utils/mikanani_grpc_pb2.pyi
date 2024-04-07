@@ -82,6 +82,12 @@ class InsertAnimeItemRequest(_message.Message):
     insertAnimeDoc: AnimeDoc
     def __init__(self, insertAnimeMeta: _Optional[_Union[AnimeMeta, _Mapping]] = ..., insertAnimeDoc: _Optional[_Union[AnimeDoc, _Mapping]] = ...) -> None: ...
 
+class InsertAnimeItemResponse(_message.Message):
+    __slots__ = ("uid",)
+    UID_FIELD_NUMBER: _ClassVar[int]
+    uid: int
+    def __init__(self, uid: _Optional[int] = ...) -> None: ...
+
 class DeleteAnimeItemRequest(_message.Message):
     __slots__ = ("uid",)
     UID_FIELD_NUMBER: _ClassVar[int]

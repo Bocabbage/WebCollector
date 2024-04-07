@@ -38,7 +38,7 @@ class MikananiServiceStub(object):
         self.InsertAnimeItem = channel.unary_unary(
                 '/mikanani_grpc_utils.MikananiService/InsertAnimeItem',
                 request_serializer=mikanani__grpc__pb2.InsertAnimeItemRequest.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                response_deserializer=mikanani__grpc__pb2.InsertAnimeItemResponse.FromString,
                 )
         self.DeleteAnimeItem = channel.unary_unary(
                 '/mikanani_grpc_utils.MikananiService/DeleteAnimeItem',
@@ -123,7 +123,7 @@ def add_MikananiServiceServicer_to_server(servicer, server):
             'InsertAnimeItem': grpc.unary_unary_rpc_method_handler(
                     servicer.InsertAnimeItem,
                     request_deserializer=mikanani__grpc__pb2.InsertAnimeItemRequest.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                    response_serializer=mikanani__grpc__pb2.InsertAnimeItemResponse.SerializeToString,
             ),
             'DeleteAnimeItem': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteAnimeItem,
@@ -226,7 +226,7 @@ class MikananiService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/InsertAnimeItem',
             mikanani__grpc__pb2.InsertAnimeItemRequest.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            mikanani__grpc__pb2.InsertAnimeItemResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

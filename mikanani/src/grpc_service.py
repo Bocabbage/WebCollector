@@ -219,7 +219,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details("insert failed.")
         mysql_conn.commit()
-        return Empty()
+        return InsertAnimeItemResponse(uid=int(uid))
 
     
     async def DeleteAnimeItem(self, request: DeleteAnimeItemRequest, context: ServicerContext):
