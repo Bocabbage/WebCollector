@@ -118,12 +118,12 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 },
                 upsert=False,
             )
-            if result.matched_count != 1:
-                LOGGER.warning(f"[UpdateAnimeDoc]upsert failed for uid[{uid}]: {expected_update}")
-                context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
-                context.set_details(f"update failed.")
-            else:
-                LOGGER.info(f"[UpdateAnimeDoc][SUCCESS]: uid[{uid}]")
+            # if result.matched_count != 1:
+            #     LOGGER.warning(f"[UpdateAnimeDoc]upsert failed for uid[{uid}]: {expected_update}")
+            #     context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
+            #     context.set_details(f"update failed.")
+            # else:
+            LOGGER.info(f"[UpdateAnimeDoc][SUCCESS]: uid[{uid}], count:[{result.matched_count}]")
         except Exception as e:
             LOGGER.error(f"[UpdateAnimeDoc] {e}[{traceback.format_exc()}]")
             LOGGER.debug(f"[UpdateAnimeDoc][uid: {uid}][request: {request.updateAnimeDoc}]")
@@ -158,14 +158,14 @@ class MikananiSvcServicer(MikananiServiceServicer):
                         f"WHERE uid = {uid};")
                 cursor.execute(usql)
                 conn.commit()
-                if cursor.rowcount != 1:
-                    context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
-                    context.set_details(f"anime update failed.")
-                    conn.rollback()
-                    cursor.close()
-                    return None
-                else:
-                    LOGGER.info(f"[UpdateAnimeMeta][SUCCESS]: uid[{uid}]")
+                # if cursor.rowcount != 1:
+                #     context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
+                #     context.set_details(f"anime update failed.")
+                #     conn.rollback()
+                #     cursor.close()
+                #     return None
+                # else:
+                LOGGER.info(f"[UpdateAnimeMeta][SUCCESS]: uid[{uid}], count[{cursor.rowcount}]")
             else:
                 context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
                 context.set_details(f"anime not exist.")
