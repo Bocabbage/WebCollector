@@ -52,7 +52,7 @@ class MikanamiAnimeSync:
         if to_update_animes:
             LOGGER.info(f"[Sync]need to update bitmap today count: {len(to_update_animes)}")
             try:
-                conn = get_mysql_conn(set(num_dict.keys()))
+                conn = get_mysql_conn()
                 for uid, val in to_update_animes.items():
                     # Update mysql record
                     bitmap = val.get("curr_bitmap")
