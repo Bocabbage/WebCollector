@@ -64,6 +64,8 @@ class MikanamiAnimeSync:
                     conn.commit()
                     LOGGER.info(f"[Sync][UpdateMySQL][SUCCESS]uid:{uid} bitmap to {bitmap}.")
                     # Rename the record
+                    target_dir = os.path.join(QbitConfig["nfs_media_file_dir"], f"medias/{uid}")
+                    num_dict = val.get("num_dict")
                     for episode, old_filename in num_dict.items():
                         os.rename(
                             os.path.join(target_dir, old_filename),
