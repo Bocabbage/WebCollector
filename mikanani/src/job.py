@@ -114,7 +114,7 @@ class RSSJob:
                 if isinstance(target_items, dict):
                     target_items = [target_items]
                 
-                for item in target_items.items():
+                for item in target_items:
                     title = item['title']
                     if match_obj := regex_pattern.match(title):
                         number = int(match_obj.groups(1)[0])
