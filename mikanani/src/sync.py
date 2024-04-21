@@ -14,23 +14,24 @@ class MikanamiAnimeSync:
         anime_infos = dict()
         
         conn = get_mysql_conn()
-        sql = f"SELECT uid, download_bitmap FROM `mikanani`.`anime_meta` WHERE is_active IS TRUE;"
+        sql = f"SELECT uid, name, download_bitmap FROM `mikanani`.`anime_meta` WHERE is_active IS TRUE;"
         cursor = conn.cursor()
         cursor.execute(sql)
         result = cursor.fetchall()
         if not result:
             return
 
-        for uid, download_bitmap in result:
-            anime_infos.setdefault(uid, {'download_bitmap': download_bitmap})
+        for uid, name, download_bitmap in result:
+            anime_infos.setdefault(uid, {'name': name, 'download_bitmap': download_bitmap})
         
         to_update_animes = dict()
-        # TODO: enhance, a little tricky
+        # For finding un-rename files
         regex_pattern = re.compile(r"\b\d{2}\b")
+        renamed_pattern = re.compile(r"\d+")
         current_time = time.time()
         for uid, info in anime_infos.items():
             target_dir = os.path.join(QbitConfig["nfs_media_file_dir"], f"medias/{uid}")
-            num_dict = dict()
+            num_set = set()
             
             files = os.listdir(target_dir)
             files = [entry for entry in files 
@@ -41,21 +42,25 @@ class MikanamiAnimeSync:
                     ]
             for file in files:
                 if match_obj := regex_pattern.search(file):
-                    num_dict.setdefault(int(match_obj.group(0)), file)
-            curr_bitmap = numset2bitmap(set(num_dict.keys()))
-            if curr_bitmap != info.get("download_bitmap") or len(num_dict) > 0:
-                to_update_animes[uid] = {
-                    "curr_bitmap": curr_bitmap,
-                    "num_dict": num_dict,
-                }
+                    # un-rename files
+                    episode = int(match_obj.group(0))
+                    os.rename(
+                        os.path.join(target_dir, file),
+                        os.path.join(target_dir, f"{episode}.mp4")
+                    )
+                    num_set.add(int(match_obj.group(0)))
+                elif renames := renamed_pattern.findall(file):
+                    num_set.add(int(renames[0]))
+            curr_bitmap = numset2bitmap(num_set)
+            if curr_bitmap != info.get("download_bitmap"):
+                to_update_animes[uid] = curr_bitmap
         
         if to_update_animes:
             LOGGER.info(f"[Sync]need to update bitmap today count: {len(to_update_animes)}")
             try:
                 conn = get_mysql_conn()
-                for uid, val in to_update_animes.items():
+                for uid, bitmap in to_update_animes.items():
                     # Update mysql record
-                    bitmap = val.get("curr_bitmap")
                     usql = ("UPDATE `mikanani`.`anime_meta` "
                             f"SET download_bitmap = {bitmap} "
                             f"WHERE uid = {uid};")
@@ -63,14 +68,5 @@ class MikanamiAnimeSync:
                     cursor.execute(usql)
                     conn.commit()
                     LOGGER.info(f"[Sync][UpdateMySQL][SUCCESS]uid:{uid} bitmap to {bitmap}.")
-                    # Rename the record
-                    target_dir = os.path.join(QbitConfig["nfs_media_file_dir"], f"medias/{uid}")
-                    num_dict = val.get("num_dict")
-                    for episode, old_filename in num_dict.items():
-                        os.rename(
-                            os.path.join(target_dir, old_filename),
-                            os.path.join(target_dir, f"{episode}.mp4")
-                        ) 
-                    LOGGER.info(f"[Sync][RenameFile][SUCCESS]: uid:{uid}.")
             except Exception as e:
                 LOGGER.error(f"[Sync][FAILED] Exception {e}: {traceback.format_exc()}")
