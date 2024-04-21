@@ -93,3 +93,9 @@ class DeleteAnimeItemRequest(_message.Message):
     UID_FIELD_NUMBER: _ClassVar[int]
     uid: int
     def __init__(self, uid: _Optional[int] = ...) -> None: ...
+
+class GetAnimeCountResponse(_message.Message):
+    __slots__ = ("count",)
+    COUNT_FIELD_NUMBER: _ClassVar[int]
+    count: int
+    def __init__(self, count: _Optional[int] = ...) -> None: ...

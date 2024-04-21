@@ -5,7 +5,7 @@ import aio_pika
 import traceback
 import grpc
 import grpc_service
-from grpc_utils import mikanani_grpc_pb2_grpc
+import mikanani_grpc_pb2_grpc
 from typing import Optional, List
 from configs import RabbitmqConfig, gRPCServerConfig
 from job import RSSJob

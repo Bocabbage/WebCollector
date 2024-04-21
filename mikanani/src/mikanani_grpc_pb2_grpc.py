@@ -3,7 +3,7 @@
 import grpc
 
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
-import grpc_utils.mikanani_grpc_pb2 as mikanani__grpc__pb2
+import mikanani_grpc_pb2 as mikanani__grpc__pb2
 
 
 class MikananiServiceStub(object):
@@ -49,6 +49,11 @@ class MikananiServiceStub(object):
                 '/mikanani_grpc_utils.MikananiService/DispatchDownloadTask',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                )
+        self.GetAnimeCount = channel.unary_unary(
+                '/mikanani_grpc_utils.MikananiService/GetAnimeCount',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=mikanani__grpc__pb2.GetAnimeCountResponse.FromString,
                 )
 
 
@@ -97,6 +102,12 @@ class MikananiServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetAnimeCount(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_MikananiServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -134,6 +145,11 @@ def add_MikananiServiceServicer_to_server(servicer, server):
                     servicer.DispatchDownloadTask,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            ),
+            'GetAnimeCount': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetAnimeCount,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=mikanani__grpc__pb2.GetAnimeCountResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -261,5 +277,22 @@ class MikananiService(object):
         return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/DispatchDownloadTask',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetAnimeCount(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/GetAnimeCount',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            mikanani__grpc__pb2.GetAnimeCountResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

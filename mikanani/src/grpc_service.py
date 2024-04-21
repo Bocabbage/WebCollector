@@ -1,5 +1,5 @@
-from grpc_utils.mikanani_grpc_pb2_grpc import MikananiServiceServicer
-from grpc_utils.mikanani_grpc_pb2 import *
+from mikanani_grpc_pb2_grpc import MikananiServiceServicer
+from mikanani_grpc_pb2 import *
 from google.protobuf.empty_pb2 import Empty
 from grpc import ServicerContext, StatusCode as gRPCStatusCode
 from configs import MongoDBConfig, MySQLConfig
@@ -27,6 +27,25 @@ class MikananiSvcServicer(MikananiServiceServicer):
     mongo_client: Optional[MongoClient] = None
     mysql_conn: Optional[MySQLConnection] = None
     
+    async def GetAnimeCount(self, request: Empty, context: ServicerContext):
+        sql = "SELECT count(*) from `mikanani`.`anime_meta`;"
+        try:
+            conn = db_helper.get_mysql_conn()
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            conn.commit()
+            if result:
+                count = result[0][0]
+        except Exception as e:
+            LOGGER.error(f"[GetAnimeCount] exception-{e}: {traceback.format_exc()}")
+            context.set_code(gRPCStatusCode.INVALID_ARGUMENT)
+            context.set_details("Internal failed for GetAnimeCount.")
+            return GetAnimeCountResponse()
+        cursor.close()
+        return GetAnimeCountResponse(count=int(count))
+
+
     async def ListAnimeMeta(self, request: ListAnimeMetaRequest, context: ServicerContext):
         active_type_query_map = {
             1: "",                           # All
