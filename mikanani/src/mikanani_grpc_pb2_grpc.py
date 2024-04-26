@@ -16,42 +16,42 @@ class MikananiServiceStub(object):
             channel: A grpc.Channel.
         """
         self.ListAnimeMeta = channel.unary_unary(
-                '/mikanani_grpc_utils.MikananiService/ListAnimeMeta',
+                '/mikanani.MikananiService/ListAnimeMeta',
                 request_serializer=mikanani__grpc__pb2.ListAnimeMetaRequest.SerializeToString,
                 response_deserializer=mikanani__grpc__pb2.ListAnimeMetaResponse.FromString,
                 )
         self.GetAnimeDoc = channel.unary_unary(
-                '/mikanani_grpc_utils.MikananiService/GetAnimeDoc',
+                '/mikanani.MikananiService/GetAnimeDoc',
                 request_serializer=mikanani__grpc__pb2.GetAnimeDocRequest.SerializeToString,
                 response_deserializer=mikanani__grpc__pb2.GetAnimeDocResponse.FromString,
                 )
         self.UpdateAnimeDoc = channel.unary_unary(
-                '/mikanani_grpc_utils.MikananiService/UpdateAnimeDoc',
+                '/mikanani.MikananiService/UpdateAnimeDoc',
                 request_serializer=mikanani__grpc__pb2.UpdateAnimeDocRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
         self.UpdateAnimeMeta = channel.unary_unary(
-                '/mikanani_grpc_utils.MikananiService/UpdateAnimeMeta',
+                '/mikanani.MikananiService/UpdateAnimeMeta',
                 request_serializer=mikanani__grpc__pb2.UpdateAnimeMetaRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
         self.InsertAnimeItem = channel.unary_unary(
-                '/mikanani_grpc_utils.MikananiService/InsertAnimeItem',
+                '/mikanani.MikananiService/InsertAnimeItem',
                 request_serializer=mikanani__grpc__pb2.InsertAnimeItemRequest.SerializeToString,
                 response_deserializer=mikanani__grpc__pb2.InsertAnimeItemResponse.FromString,
                 )
         self.DeleteAnimeItem = channel.unary_unary(
-                '/mikanani_grpc_utils.MikananiService/DeleteAnimeItem',
+                '/mikanani.MikananiService/DeleteAnimeItem',
                 request_serializer=mikanani__grpc__pb2.DeleteAnimeItemRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
         self.DispatchDownloadTask = channel.unary_unary(
-                '/mikanani_grpc_utils.MikananiService/DispatchDownloadTask',
+                '/mikanani.MikananiService/DispatchDownloadTask',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
         self.GetAnimeCount = channel.unary_unary(
-                '/mikanani_grpc_utils.MikananiService/GetAnimeCount',
+                '/mikanani.MikananiService/GetAnimeCount',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=mikanani__grpc__pb2.GetAnimeCountResponse.FromString,
                 )
@@ -153,7 +153,7 @@ def add_MikananiServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'mikanani_grpc_utils.MikananiService', rpc_method_handlers)
+            'mikanani.MikananiService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -172,7 +172,7 @@ class MikananiService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/ListAnimeMeta',
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/ListAnimeMeta',
             mikanani__grpc__pb2.ListAnimeMetaRequest.SerializeToString,
             mikanani__grpc__pb2.ListAnimeMetaResponse.FromString,
             options, channel_credentials,
@@ -189,7 +189,7 @@ class MikananiService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/GetAnimeDoc',
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/GetAnimeDoc',
             mikanani__grpc__pb2.GetAnimeDocRequest.SerializeToString,
             mikanani__grpc__pb2.GetAnimeDocResponse.FromString,
             options, channel_credentials,
@@ -206,7 +206,7 @@ class MikananiService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/UpdateAnimeDoc',
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/UpdateAnimeDoc',
             mikanani__grpc__pb2.UpdateAnimeDocRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
@@ -223,7 +223,7 @@ class MikananiService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/UpdateAnimeMeta',
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/UpdateAnimeMeta',
             mikanani__grpc__pb2.UpdateAnimeMetaRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
@@ -240,7 +240,7 @@ class MikananiService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/InsertAnimeItem',
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/InsertAnimeItem',
             mikanani__grpc__pb2.InsertAnimeItemRequest.SerializeToString,
             mikanani__grpc__pb2.InsertAnimeItemResponse.FromString,
             options, channel_credentials,
@@ -257,7 +257,7 @@ class MikananiService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/DeleteAnimeItem',
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/DeleteAnimeItem',
             mikanani__grpc__pb2.DeleteAnimeItemRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
@@ -274,7 +274,7 @@ class MikananiService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/DispatchDownloadTask',
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/DispatchDownloadTask',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
@@ -291,7 +291,7 @@ class MikananiService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/mikanani_grpc_utils.MikananiService/GetAnimeCount',
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/GetAnimeCount',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             mikanani__grpc__pb2.GetAnimeCountResponse.FromString,
             options, channel_credentials,
