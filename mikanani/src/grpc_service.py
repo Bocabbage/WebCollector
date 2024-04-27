@@ -238,6 +238,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
             context.set_code(gRPCStatusCode.INTERNAL)
             context.set_details("insert failed.")
         mysql_conn.commit()
+        LOGGER.info(f"[InsertAnimeItem][SUCCESS]: uid[{uid}], meta-info:[{meta_info}]")
         return InsertAnimeItemResponse(uid=int(uid))
 
     
