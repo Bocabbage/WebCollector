@@ -1,0 +1,239 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /helloworld/{name}:
+        get:
+            tags:
+                - Greeter
+            description: Sends a greeting
+            operationId: Greeter_SayHello
+            parameters:
+                - name: name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /mikanani/v2/anime/anime-count:
+        get:
+            tags:
+                - MikananiService
+            operationId: MikananiService_GetAnimeCount
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mikanani.GetAnimeCountResponse'
+    /mikanani/v2/anime/delete/{uid}:
+        delete:
+            tags:
+                - MikananiService
+            operationId: MikananiService_DeleteAnimeItem
+            parameters:
+                - name: uid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /mikanani/v2/anime/dispatch-download:
+        post:
+            tags:
+                - MikananiService
+            operationId: MikananiService_DispatchDownloadTask
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /mikanani/v2/anime/doc/{uid}:
+        get:
+            tags:
+                - MikananiService
+            operationId: MikananiService_GetAnimeDoc
+            parameters:
+                - name: uid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mikanani.GetAnimeDocResponse'
+    /mikanani/v2/anime/insert:
+        post:
+            tags:
+                - MikananiService
+            operationId: MikananiService_InsertAnimeItem
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/mikanani.InsertAnimeItemRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mikanani.InsertAnimeItemResponse'
+    /mikanani/v2/anime/list-meta:
+        get:
+            tags:
+                - MikananiService
+            operationId: MikananiService_ListAnimeMeta
+            parameters:
+                - name: startIndex
+                  in: query
+                  schema:
+                    type: string
+                - name: endIndex
+                  in: query
+                  schema:
+                    type: string
+                - name: statusFilter
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mikanani.ListAnimeMetaResponse'
+    /mikanani/v2/anime/update-doc:
+        put:
+            tags:
+                - MikananiService
+            operationId: MikananiService_UpdateAnimeDoc
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/mikanani.UpdateAnimeDocRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /mikanani/v2/anime/update-meta:
+        put:
+            tags:
+                - MikananiService
+            operationId: MikananiService_UpdateAnimeMeta
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/mikanani.UpdateAnimeMetaRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+components:
+    schemas:
+        helloworld.v1.HelloReply:
+            type: object
+            properties:
+                message:
+                    type: string
+            description: The response message containing the greetings
+        mikanani.AnimeDoc:
+            type: object
+            properties:
+                uid:
+                    type: string
+                rssUrl:
+                    type: string
+                rule:
+                    type: string
+                regex:
+                    type: string
+        mikanani.AnimeMeta:
+            type: object
+            properties:
+                uid:
+                    type: string
+                name:
+                    type: string
+                downloadBitmap:
+                    type: string
+                isActive:
+                    type: integer
+                    format: int32
+                tags:
+                    type: array
+                    items:
+                        type: string
+        mikanani.GetAnimeCountResponse:
+            type: object
+            properties:
+                count:
+                    type: string
+            description: '---- GetAnimeCount'
+        mikanani.GetAnimeDocResponse:
+            type: object
+            properties:
+                animeDoc:
+                    $ref: '#/components/schemas/mikanani.AnimeDoc'
+        mikanani.InsertAnimeItemRequest:
+            type: object
+            properties:
+                insertAnimeMeta:
+                    $ref: '#/components/schemas/mikanani.AnimeMeta'
+                insertAnimeDoc:
+                    $ref: '#/components/schemas/mikanani.AnimeDoc'
+            description: '---- InsertAnimeItem'
+        mikanani.InsertAnimeItemResponse:
+            type: object
+            properties:
+                uid:
+                    type: string
+        mikanani.ListAnimeMetaResponse:
+            type: object
+            properties:
+                itemCount:
+                    type: string
+                animeMetas:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/mikanani.AnimeMeta'
+        mikanani.UpdateAnimeDocRequest:
+            type: object
+            properties:
+                updateAnimeDoc:
+                    $ref: '#/components/schemas/mikanani.AnimeDoc'
+            description: '---- UpdateAnimeDoc'
+        mikanani.UpdateAnimeMetaRequest:
+            type: object
+            properties:
+                updateAnimeMeta:
+                    $ref: '#/components/schemas/mikanani.AnimeMeta'
+            description: '---- UpdateAnimeMeta'
+tags:
+    - name: Greeter
+      description: The greeting service definition.
+    - name: MikananiService
