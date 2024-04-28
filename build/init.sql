@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS `anime_meta`(
     `name` VARCHAR(128) NOT NULL UNIQUE,
     `download_bitmap` BIGINT DEFAULT 0,
     `is_active` BOOLEAN NOT NULL DEFAULT FALSE,
-    `tags` VARCHAR(256) DEFAULT NULL,
+    `tags` JSON,
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX id_idx (`uid`),
     INDEX name_idx (`name`)
 
