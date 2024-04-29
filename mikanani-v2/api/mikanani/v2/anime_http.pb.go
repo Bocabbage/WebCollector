@@ -21,9 +21,11 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationMikananiServiceDeleteAnimeItem = "/mikanani.MikananiService/DeleteAnimeItem"
+const OperationMikananiServiceDeleteRecentUpdateById = "/mikanani.MikananiService/DeleteRecentUpdateById"
 const OperationMikananiServiceDispatchDownloadTask = "/mikanani.MikananiService/DispatchDownloadTask"
 const OperationMikananiServiceGetAnimeCount = "/mikanani.MikananiService/GetAnimeCount"
 const OperationMikananiServiceGetAnimeDoc = "/mikanani.MikananiService/GetAnimeDoc"
+const OperationMikananiServiceGetRecentUpdateList = "/mikanani.MikananiService/GetRecentUpdateList"
 const OperationMikananiServiceInsertAnimeItem = "/mikanani.MikananiService/InsertAnimeItem"
 const OperationMikananiServiceListAnimeMeta = "/mikanani.MikananiService/ListAnimeMeta"
 const OperationMikananiServiceUpdateAnimeDoc = "/mikanani.MikananiService/UpdateAnimeDoc"
@@ -31,9 +33,11 @@ const OperationMikananiServiceUpdateAnimeMeta = "/mikanani.MikananiService/Updat
 
 type MikananiServiceHTTPServer interface {
 	DeleteAnimeItem(context.Context, *DeleteAnimeItemRequest) (*emptypb.Empty, error)
+	DeleteRecentUpdateById(context.Context, *DelRecentUpdateByIdRequest) (*emptypb.Empty, error)
 	DispatchDownloadTask(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	GetAnimeCount(context.Context, *emptypb.Empty) (*GetAnimeCountResponse, error)
 	GetAnimeDoc(context.Context, *GetAnimeDocRequest) (*GetAnimeDocResponse, error)
+	GetRecentUpdateList(context.Context, *emptypb.Empty) (*GetRecentUpdateListResponse, error)
 	InsertAnimeItem(context.Context, *InsertAnimeItemRequest) (*InsertAnimeItemResponse, error)
 	ListAnimeMeta(context.Context, *ListAnimeMetaRequest) (*ListAnimeMetaResponse, error)
 	UpdateAnimeDoc(context.Context, *UpdateAnimeDocRequest) (*emptypb.Empty, error)
@@ -50,6 +54,8 @@ func RegisterMikananiServiceHTTPServer(s *http.Server, srv MikananiServiceHTTPSe
 	r.DELETE("/mikanani/v2/anime/delete/{uid}", _MikananiService_DeleteAnimeItem0_HTTP_Handler(srv))
 	r.POST("/mikanani/v2/anime/dispatch-download", _MikananiService_DispatchDownloadTask0_HTTP_Handler(srv))
 	r.GET("/mikanani/v2/anime/anime-count", _MikananiService_GetAnimeCount0_HTTP_Handler(srv))
+	r.GET("/mikanani/v2/anime/recent-updates", _MikananiService_GetRecentUpdateList0_HTTP_Handler(srv))
+	r.DELETE("/mikanani/v2/anime/recent/{uid}", _MikananiService_DeleteRecentUpdateById0_HTTP_Handler(srv))
 }
 
 func _MikananiService_ListAnimeMeta0_HTTP_Handler(srv MikananiServiceHTTPServer) func(ctx http.Context) error {
@@ -184,6 +190,9 @@ func _MikananiService_DeleteAnimeItem0_HTTP_Handler(srv MikananiServiceHTTPServe
 func _MikananiService_DispatchDownloadTask0_HTTP_Handler(srv MikananiServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in emptypb.Empty
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
@@ -219,11 +228,54 @@ func _MikananiService_GetAnimeCount0_HTTP_Handler(srv MikananiServiceHTTPServer)
 	}
 }
 
+func _MikananiService_GetRecentUpdateList0_HTTP_Handler(srv MikananiServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationMikananiServiceGetRecentUpdateList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetRecentUpdateList(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetRecentUpdateListResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _MikananiService_DeleteRecentUpdateById0_HTTP_Handler(srv MikananiServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DelRecentUpdateByIdRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationMikananiServiceDeleteRecentUpdateById)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteRecentUpdateById(ctx, req.(*DelRecentUpdateByIdRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type MikananiServiceHTTPClient interface {
 	DeleteAnimeItem(ctx context.Context, req *DeleteAnimeItemRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteRecentUpdateById(ctx context.Context, req *DelRecentUpdateByIdRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DispatchDownloadTask(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetAnimeCount(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetAnimeCountResponse, err error)
 	GetAnimeDoc(ctx context.Context, req *GetAnimeDocRequest, opts ...http.CallOption) (rsp *GetAnimeDocResponse, err error)
+	GetRecentUpdateList(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetRecentUpdateListResponse, err error)
 	InsertAnimeItem(ctx context.Context, req *InsertAnimeItemRequest, opts ...http.CallOption) (rsp *InsertAnimeItemResponse, err error)
 	ListAnimeMeta(ctx context.Context, req *ListAnimeMetaRequest, opts ...http.CallOption) (rsp *ListAnimeMetaResponse, err error)
 	UpdateAnimeDoc(ctx context.Context, req *UpdateAnimeDocRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -251,13 +303,26 @@ func (c *MikananiServiceHTTPClientImpl) DeleteAnimeItem(ctx context.Context, in 
 	return &out, nil
 }
 
+func (c *MikananiServiceHTTPClientImpl) DeleteRecentUpdateById(ctx context.Context, in *DelRecentUpdateByIdRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/mikanani/v2/anime/recent/{uid}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationMikananiServiceDeleteRecentUpdateById))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 func (c *MikananiServiceHTTPClientImpl) DispatchDownloadTask(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/mikanani/v2/anime/dispatch-download"
-	path := binding.EncodeURL(pattern, in, true)
+	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationMikananiServiceDispatchDownloadTask))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, nil, &out, opts...)
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -282,6 +347,19 @@ func (c *MikananiServiceHTTPClientImpl) GetAnimeDoc(ctx context.Context, in *Get
 	pattern := "/mikanani/v2/anime/doc/{uid}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationMikananiServiceGetAnimeDoc))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *MikananiServiceHTTPClientImpl) GetRecentUpdateList(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*GetRecentUpdateListResponse, error) {
+	var out GetRecentUpdateListResponse
+	pattern := "/mikanani/v2/anime/recent-updates"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationMikananiServiceGetRecentUpdateList))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

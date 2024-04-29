@@ -57,6 +57,10 @@ paths:
             tags:
                 - MikananiService
             operationId: MikananiService_DispatchDownloadTask
+            requestBody:
+                content:
+                    application/json: {}
+                required: true
             responses:
                 "200":
                     description: OK
@@ -123,6 +127,33 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/mikanani.ListAnimeMetaResponse'
+    /mikanani/v2/anime/recent-updates:
+        get:
+            tags:
+                - MikananiService
+            operationId: MikananiService_GetRecentUpdateList
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mikanani.GetRecentUpdateListResponse'
+    /mikanani/v2/anime/recent/{uid}:
+        delete:
+            tags:
+                - MikananiService
+            operationId: MikananiService_DeleteRecentUpdateById
+            parameters:
+                - name: uid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /mikanani/v2/anime/update-doc:
         put:
             tags:
@@ -184,6 +215,9 @@ components:
                 isActive:
                     type: integer
                     format: int32
+                episodes:
+                    type: integer
+                    format: int32
                 tags:
                     type: array
                     items:
@@ -199,6 +233,14 @@ components:
             properties:
                 animeDoc:
                     $ref: '#/components/schemas/mikanani.AnimeDoc'
+        mikanani.GetRecentUpdateListResponse:
+            type: object
+            properties:
+                uids:
+                    type: array
+                    items:
+                        type: string
+            description: '---- GetRecentUpdateList'
         mikanani.InsertAnimeItemRequest:
             type: object
             properties:

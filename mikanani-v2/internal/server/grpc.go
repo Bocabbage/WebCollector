@@ -1,6 +1,7 @@
 package server
 
 import (
+	"crypto/tls"
 	v2 "mikanani-v2/api/mikanani/v2"
 	"mikanani-v2/internal/conf"
 	"mikanani-v2/internal/service"
@@ -25,6 +26,14 @@ func NewGRPCServer(c *conf.Server, mikanani *service.MikananiServiceService, log
 	}
 	if c.Grpc.Timeout != nil {
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
+	}
+	if c.Tls.Cert != "" && c.Tls.Key != "" {
+		cert, err := tls.LoadX509KeyPair(c.Tls.Cert, c.Tls.Key)
+		if err != nil {
+			log.NewHelper(logger).Warnf("Tls init failed: %v", err)
+		} else {
+			opts = append(opts, grpc.TLSConfig(&tls.Config{Certificates: []tls.Certificate{cert}}))
+		}
 	}
 	srv := grpc.NewServer(opts...)
 	v2.RegisterMikananiServiceServer(srv, mikanani)

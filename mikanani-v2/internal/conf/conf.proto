@@ -23,7 +23,7 @@ message Server {
   }
   message TLS {
     string cert = 1;
-    string addr = 2;
+    string key = 2;
   }
   HTTP http = 1;
   GRPC grpc = 2;
@@ -40,8 +40,6 @@ message Data {
     string addr = 2;
     string password = 3;
     int32 db = 4;
-    google.protobuf.Duration read_timeout = 5;
-    google.protobuf.Duration write_timeout = 6;
   }
   message Mongo {
     string host = 1;

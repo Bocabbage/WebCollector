@@ -30,7 +30,8 @@ func wireApp(confServer *conf.Server, confData *conf.Data, utils *conf.Utils, lo
 	}
 	animeMetaRepo := data.NewAnimeMetaRepo(dataData, logger)
 	animeDocRepo := data.NewAnimeDocRepo(dataData, confData, logger)
-	animeUsecase := biz.NewAnimeUsecase(animeMetaRepo, animeDocRepo, logger)
+	animeStateRepo := data.NewAnimeStateRepo(dataData, logger)
+	animeUsecase := biz.NewAnimeUsecase(animeMetaRepo, animeDocRepo, animeStateRepo, logger)
 	mikananiServiceService := service.NewMikananiServiceService(utils, animeUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, mikananiServiceService, logger)
 	httpServer := server.NewHTTPServer(confServer, mikananiServiceService, logger)

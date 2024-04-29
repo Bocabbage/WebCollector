@@ -22,6 +22,7 @@ func (AnimeMeta) Fields() []ent.Field {
 		field.Int64("downloadBitmap").Default(0),
 		field.Bool("isActive").Default(false),
 		field.JSON("tags", []string{}).Optional(),
+		field.Int64("episodes").Default(24).Immutable().Max(52),
 		field.Time("createTime").Default(time.Now).SchemaType(map[string]string{
 			dialect.MySQL: "datetime",
 		}),

@@ -40,12 +40,18 @@ func init() {
 	animemetaDescIsActive := animemetaFields[3].Descriptor()
 	// animemeta.DefaultIsActive holds the default value on creation for the isActive field.
 	animemeta.DefaultIsActive = animemetaDescIsActive.Default.(bool)
+	// animemetaDescEpisodes is the schema descriptor for episodes field.
+	animemetaDescEpisodes := animemetaFields[5].Descriptor()
+	// animemeta.DefaultEpisodes holds the default value on creation for the episodes field.
+	animemeta.DefaultEpisodes = animemetaDescEpisodes.Default.(int64)
+	// animemeta.EpisodesValidator is a validator for the "episodes" field. It is called by the builders before save.
+	animemeta.EpisodesValidator = animemetaDescEpisodes.Validators[0].(func(int64) error)
 	// animemetaDescCreateTime is the schema descriptor for createTime field.
-	animemetaDescCreateTime := animemetaFields[5].Descriptor()
+	animemetaDescCreateTime := animemetaFields[6].Descriptor()
 	// animemeta.DefaultCreateTime holds the default value on creation for the createTime field.
 	animemeta.DefaultCreateTime = animemetaDescCreateTime.Default.(func() time.Time)
 	// animemetaDescUpdateTime is the schema descriptor for updateTime field.
-	animemetaDescUpdateTime := animemetaFields[6].Descriptor()
+	animemetaDescUpdateTime := animemetaFields[7].Descriptor()
 	// animemeta.DefaultUpdateTime holds the default value on creation for the updateTime field.
 	animemeta.DefaultUpdateTime = animemetaDescUpdateTime.Default.(func() time.Time)
 }

@@ -48,7 +48,7 @@ func (s *MikananiServiceService) ListAnimeMeta(ctx context.Context, req *pb.List
 				Name:           meta.Name,
 				DownloadBitmap: meta.DownloadBitMap,
 				IsActive:       meta.IsActive,
-				Tags:           meta.Tags, // TODO: enhancement
+				Tags:           meta.Tags,
 			},
 		)
 	}
@@ -148,4 +148,17 @@ func (s *MikananiServiceService) GetAnimeCount(ctx context.Context, req *emptypb
 		return nil, err
 	}
 	return &pb.GetAnimeCountResponse{Count: count}, nil
+}
+
+func (s *MikananiServiceService) GetRecentUpdateList(ctx context.Context, req *emptypb.Empty) (*pb.GetRecentUpdateListResponse, error) {
+	res, err := s.auc.GetRecentUpdateList(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetRecentUpdateListResponse{Uids: *res}, nil
+}
+
+func (s *MikananiServiceService) DeleteRecentUpdateById(ctx context.Context, req *pb.DelRecentUpdateByIdRequest) (*emptypb.Empty, error) {
+	err := s.auc.DelRecentUpdateByIdRequest(ctx, req.Uid)
+	return &emptypb.Empty{}, err
 }

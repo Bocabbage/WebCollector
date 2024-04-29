@@ -41,6 +41,8 @@ type AnimeMetaMutation struct {
 	isActive          *bool
 	tags              *[]string
 	appendtags        []string
+	episodes          *int64
+	addepisodes       *int64
 	createTime        *time.Time
 	updateTime        *time.Time
 	clearedFields     map[string]struct{}
@@ -396,6 +398,62 @@ func (m *AnimeMetaMutation) ResetTags() {
 	delete(m.clearedFields, animemeta.FieldTags)
 }
 
+// SetEpisodes sets the "episodes" field.
+func (m *AnimeMetaMutation) SetEpisodes(i int64) {
+	m.episodes = &i
+	m.addepisodes = nil
+}
+
+// Episodes returns the value of the "episodes" field in the mutation.
+func (m *AnimeMetaMutation) Episodes() (r int64, exists bool) {
+	v := m.episodes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEpisodes returns the old "episodes" field's value of the AnimeMeta entity.
+// If the AnimeMeta object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimeMetaMutation) OldEpisodes(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEpisodes is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEpisodes requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEpisodes: %w", err)
+	}
+	return oldValue.Episodes, nil
+}
+
+// AddEpisodes adds i to the "episodes" field.
+func (m *AnimeMetaMutation) AddEpisodes(i int64) {
+	if m.addepisodes != nil {
+		*m.addepisodes += i
+	} else {
+		m.addepisodes = &i
+	}
+}
+
+// AddedEpisodes returns the value that was added to the "episodes" field in this mutation.
+func (m *AnimeMetaMutation) AddedEpisodes() (r int64, exists bool) {
+	v := m.addepisodes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetEpisodes resets all changes to the "episodes" field.
+func (m *AnimeMetaMutation) ResetEpisodes() {
+	m.episodes = nil
+	m.addepisodes = nil
+}
+
 // SetCreateTime sets the "createTime" field.
 func (m *AnimeMetaMutation) SetCreateTime(t time.Time) {
 	m.createTime = &t
@@ -502,7 +560,7 @@ func (m *AnimeMetaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AnimeMetaMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.uid != nil {
 		fields = append(fields, animemeta.FieldUID)
 	}
@@ -517,6 +575,9 @@ func (m *AnimeMetaMutation) Fields() []string {
 	}
 	if m.tags != nil {
 		fields = append(fields, animemeta.FieldTags)
+	}
+	if m.episodes != nil {
+		fields = append(fields, animemeta.FieldEpisodes)
 	}
 	if m.createTime != nil {
 		fields = append(fields, animemeta.FieldCreateTime)
@@ -542,6 +603,8 @@ func (m *AnimeMetaMutation) Field(name string) (ent.Value, bool) {
 		return m.IsActive()
 	case animemeta.FieldTags:
 		return m.Tags()
+	case animemeta.FieldEpisodes:
+		return m.Episodes()
 	case animemeta.FieldCreateTime:
 		return m.CreateTime()
 	case animemeta.FieldUpdateTime:
@@ -565,6 +628,8 @@ func (m *AnimeMetaMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldIsActive(ctx)
 	case animemeta.FieldTags:
 		return m.OldTags(ctx)
+	case animemeta.FieldEpisodes:
+		return m.OldEpisodes(ctx)
 	case animemeta.FieldCreateTime:
 		return m.OldCreateTime(ctx)
 	case animemeta.FieldUpdateTime:
@@ -613,6 +678,13 @@ func (m *AnimeMetaMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTags(v)
 		return nil
+	case animemeta.FieldEpisodes:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEpisodes(v)
+		return nil
 	case animemeta.FieldCreateTime:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -641,6 +713,9 @@ func (m *AnimeMetaMutation) AddedFields() []string {
 	if m.adddownloadBitmap != nil {
 		fields = append(fields, animemeta.FieldDownloadBitmap)
 	}
+	if m.addepisodes != nil {
+		fields = append(fields, animemeta.FieldEpisodes)
+	}
 	return fields
 }
 
@@ -653,6 +728,8 @@ func (m *AnimeMetaMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedUID()
 	case animemeta.FieldDownloadBitmap:
 		return m.AddedDownloadBitmap()
+	case animemeta.FieldEpisodes:
+		return m.AddedEpisodes()
 	}
 	return nil, false
 }
@@ -675,6 +752,13 @@ func (m *AnimeMetaMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDownloadBitmap(v)
+		return nil
+	case animemeta.FieldEpisodes:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEpisodes(v)
 		return nil
 	}
 	return fmt.Errorf("unknown AnimeMeta numeric field %s", name)
@@ -726,6 +810,9 @@ func (m *AnimeMetaMutation) ResetField(name string) error {
 		return nil
 	case animemeta.FieldTags:
 		m.ResetTags()
+		return nil
+	case animemeta.FieldEpisodes:
+		m.ResetEpisodes()
 		return nil
 	case animemeta.FieldCreateTime:
 		m.ResetCreateTime()

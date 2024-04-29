@@ -74,6 +74,11 @@ func IsActive(v bool) predicate.AnimeMeta {
 	return predicate.AnimeMeta(sql.FieldEQ(FieldIsActive, v))
 }
 
+// Episodes applies equality check predicate on the "episodes" field. It's identical to EpisodesEQ.
+func Episodes(v int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldEQ(FieldEpisodes, v))
+}
+
 // CreateTime applies equality check predicate on the "createTime" field. It's identical to CreateTimeEQ.
 func CreateTime(v time.Time) predicate.AnimeMeta {
 	return predicate.AnimeMeta(sql.FieldEQ(FieldCreateTime, v))
@@ -247,6 +252,46 @@ func TagsIsNil() predicate.AnimeMeta {
 // TagsNotNil applies the NotNil predicate on the "tags" field.
 func TagsNotNil() predicate.AnimeMeta {
 	return predicate.AnimeMeta(sql.FieldNotNull(FieldTags))
+}
+
+// EpisodesEQ applies the EQ predicate on the "episodes" field.
+func EpisodesEQ(v int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldEQ(FieldEpisodes, v))
+}
+
+// EpisodesNEQ applies the NEQ predicate on the "episodes" field.
+func EpisodesNEQ(v int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldNEQ(FieldEpisodes, v))
+}
+
+// EpisodesIn applies the In predicate on the "episodes" field.
+func EpisodesIn(vs ...int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldIn(FieldEpisodes, vs...))
+}
+
+// EpisodesNotIn applies the NotIn predicate on the "episodes" field.
+func EpisodesNotIn(vs ...int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldNotIn(FieldEpisodes, vs...))
+}
+
+// EpisodesGT applies the GT predicate on the "episodes" field.
+func EpisodesGT(v int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldGT(FieldEpisodes, v))
+}
+
+// EpisodesGTE applies the GTE predicate on the "episodes" field.
+func EpisodesGTE(v int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldGTE(FieldEpisodes, v))
+}
+
+// EpisodesLT applies the LT predicate on the "episodes" field.
+func EpisodesLT(v int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldLT(FieldEpisodes, v))
+}
+
+// EpisodesLTE applies the LTE predicate on the "episodes" field.
+func EpisodesLTE(v int64) predicate.AnimeMeta {
+	return predicate.AnimeMeta(sql.FieldLTE(FieldEpisodes, v))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "createTime" field.

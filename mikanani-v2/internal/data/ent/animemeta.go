@@ -28,6 +28,8 @@ type AnimeMeta struct {
 	IsActive bool `json:"isActive,omitempty"`
 	// Tags holds the value of the "tags" field.
 	Tags []string `json:"tags,omitempty"`
+	// Episodes holds the value of the "episodes" field.
+	Episodes int64 `json:"episodes,omitempty"`
 	// CreateTime holds the value of the "createTime" field.
 	CreateTime time.Time `json:"createTime,omitempty"`
 	// UpdateTime holds the value of the "updateTime" field.
@@ -44,7 +46,7 @@ func (*AnimeMeta) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case animemeta.FieldIsActive:
 			values[i] = new(sql.NullBool)
-		case animemeta.FieldID, animemeta.FieldUID, animemeta.FieldDownloadBitmap:
+		case animemeta.FieldID, animemeta.FieldUID, animemeta.FieldDownloadBitmap, animemeta.FieldEpisodes:
 			values[i] = new(sql.NullInt64)
 		case animemeta.FieldName:
 			values[i] = new(sql.NullString)
@@ -102,6 +104,12 @@ func (am *AnimeMeta) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &am.Tags); err != nil {
 					return fmt.Errorf("unmarshal field tags: %w", err)
 				}
+			}
+		case animemeta.FieldEpisodes:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field episodes", values[i])
+			} else if value.Valid {
+				am.Episodes = value.Int64
 			}
 		case animemeta.FieldCreateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -165,6 +173,9 @@ func (am *AnimeMeta) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("tags=")
 	builder.WriteString(fmt.Sprintf("%v", am.Tags))
+	builder.WriteString(", ")
+	builder.WriteString("episodes=")
+	builder.WriteString(fmt.Sprintf("%v", am.Episodes))
 	builder.WriteString(", ")
 	builder.WriteString("createTime=")
 	builder.WriteString(am.CreateTime.Format(time.ANSIC))

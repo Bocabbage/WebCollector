@@ -23,6 +23,8 @@ const (
 	FieldIsActive = "is_active"
 	// FieldTags holds the string denoting the tags field in the database.
 	FieldTags = "tags"
+	// FieldEpisodes holds the string denoting the episodes field in the database.
+	FieldEpisodes = "episodes"
 	// FieldCreateTime holds the string denoting the createtime field in the database.
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the updatetime field in the database.
@@ -39,6 +41,7 @@ var Columns = []string{
 	FieldDownloadBitmap,
 	FieldIsActive,
 	FieldTags,
+	FieldEpisodes,
 	FieldCreateTime,
 	FieldUpdateTime,
 }
@@ -60,6 +63,10 @@ var (
 	DefaultDownloadBitmap int64
 	// DefaultIsActive holds the default value on creation for the "isActive" field.
 	DefaultIsActive bool
+	// DefaultEpisodes holds the default value on creation for the "episodes" field.
+	DefaultEpisodes int64
+	// EpisodesValidator is a validator for the "episodes" field. It is called by the builders before save.
+	EpisodesValidator func(int64) error
 	// DefaultCreateTime holds the default value on creation for the "createTime" field.
 	DefaultCreateTime func() time.Time
 	// DefaultUpdateTime holds the default value on creation for the "updateTime" field.
@@ -92,6 +99,11 @@ func ByDownloadBitmap(opts ...sql.OrderTermOption) OrderOption {
 // ByIsActive orders the results by the isActive field.
 func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
+}
+
+// ByEpisodes orders the results by the episodes field.
+func ByEpisodes(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEpisodes, opts...).ToFunc()
 }
 
 // ByCreateTime orders the results by the createTime field.

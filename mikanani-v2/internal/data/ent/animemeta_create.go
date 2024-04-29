@@ -66,6 +66,20 @@ func (amc *AnimeMetaCreate) SetTags(s []string) *AnimeMetaCreate {
 	return amc
 }
 
+// SetEpisodes sets the "episodes" field.
+func (amc *AnimeMetaCreate) SetEpisodes(i int64) *AnimeMetaCreate {
+	amc.mutation.SetEpisodes(i)
+	return amc
+}
+
+// SetNillableEpisodes sets the "episodes" field if the given value is not nil.
+func (amc *AnimeMetaCreate) SetNillableEpisodes(i *int64) *AnimeMetaCreate {
+	if i != nil {
+		amc.SetEpisodes(*i)
+	}
+	return amc
+}
+
 // SetCreateTime sets the "createTime" field.
 func (amc *AnimeMetaCreate) SetCreateTime(t time.Time) *AnimeMetaCreate {
 	amc.mutation.SetCreateTime(t)
@@ -137,6 +151,10 @@ func (amc *AnimeMetaCreate) defaults() {
 		v := animemeta.DefaultIsActive
 		amc.mutation.SetIsActive(v)
 	}
+	if _, ok := amc.mutation.Episodes(); !ok {
+		v := animemeta.DefaultEpisodes
+		amc.mutation.SetEpisodes(v)
+	}
 	if _, ok := amc.mutation.CreateTime(); !ok {
 		v := animemeta.DefaultCreateTime()
 		amc.mutation.SetCreateTime(v)
@@ -165,6 +183,14 @@ func (amc *AnimeMetaCreate) check() error {
 	}
 	if _, ok := amc.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "isActive", err: errors.New(`ent: missing required field "AnimeMeta.isActive"`)}
+	}
+	if _, ok := amc.mutation.Episodes(); !ok {
+		return &ValidationError{Name: "episodes", err: errors.New(`ent: missing required field "AnimeMeta.episodes"`)}
+	}
+	if v, ok := amc.mutation.Episodes(); ok {
+		if err := animemeta.EpisodesValidator(v); err != nil {
+			return &ValidationError{Name: "episodes", err: fmt.Errorf(`ent: validator failed for field "AnimeMeta.episodes": %w`, err)}
+		}
 	}
 	if _, ok := amc.mutation.CreateTime(); !ok {
 		return &ValidationError{Name: "createTime", err: errors.New(`ent: missing required field "AnimeMeta.createTime"`)}
@@ -217,6 +243,10 @@ func (amc *AnimeMetaCreate) createSpec() (*AnimeMeta, *sqlgraph.CreateSpec) {
 	if value, ok := amc.mutation.Tags(); ok {
 		_spec.SetField(animemeta.FieldTags, field.TypeJSON, value)
 		_node.Tags = value
+	}
+	if value, ok := amc.mutation.Episodes(); ok {
+		_spec.SetField(animemeta.FieldEpisodes, field.TypeInt64, value)
+		_node.Episodes = value
 	}
 	if value, ok := amc.mutation.CreateTime(); ok {
 		_spec.SetField(animemeta.FieldCreateTime, field.TypeTime, value)

@@ -16,6 +16,7 @@ var (
 		{Name: "download_bitmap", Type: field.TypeInt64, Default: 0},
 		{Name: "is_active", Type: field.TypeBool, Default: false},
 		{Name: "tags", Type: field.TypeJSON, Nullable: true},
+		{Name: "episodes", Type: field.TypeInt64, Default: 24},
 		{Name: "create_time", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "update_time", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 	}

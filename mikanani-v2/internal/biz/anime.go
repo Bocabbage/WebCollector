@@ -38,10 +38,16 @@ type AnimeDocRepo interface {
 	Delete(ctx context.Context, uid int64) error
 }
 
+type AnimeStateRepo interface {
+	GetRecentUpdateList(ctx context.Context) (*[]int64, error)
+	DeleteRecentUpdateById(ctx context.Context, uid int64) error
+}
+
 type AnimeUsecase struct {
-	log      *log.Helper
-	metaRepo AnimeMetaRepo
-	docRepo  AnimeDocRepo
+	log       *log.Helper
+	metaRepo  AnimeMetaRepo
+	docRepo   AnimeDocRepo
+	stateRepo AnimeStateRepo
 }
 
 func (uc *AnimeUsecase) ListAnimeMeta(ctx context.Context, start, end, mode int64) ([]*AnimeMeta, error) {
@@ -103,10 +109,19 @@ func (uc *AnimeUsecase) GetAnimeCount(ctx context.Context) (int64, error) {
 	return uc.metaRepo.Count(ctx)
 }
 
-func NewAnimeUsecase(metaRepo AnimeMetaRepo, docRepo AnimeDocRepo, logger log.Logger) *AnimeUsecase {
+func (uc *AnimeUsecase) GetRecentUpdateList(ctx context.Context) (*[]int64, error) {
+	return uc.stateRepo.GetRecentUpdateList(ctx)
+}
+
+func (uc *AnimeUsecase) DelRecentUpdateByIdRequest(ctx context.Context, uid int64) error {
+	return uc.stateRepo.DeleteRecentUpdateById(ctx, uid)
+}
+
+func NewAnimeUsecase(metaRepo AnimeMetaRepo, docRepo AnimeDocRepo, stateRepo AnimeStateRepo, logger log.Logger) *AnimeUsecase {
 	return &AnimeUsecase{
-		metaRepo: metaRepo,
-		docRepo:  docRepo,
-		log:      log.NewHelper(logger),
+		metaRepo:  metaRepo,
+		docRepo:   docRepo,
+		stateRepo: stateRepo,
+		log:       log.NewHelper(logger),
 	}
 }
