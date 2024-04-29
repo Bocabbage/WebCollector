@@ -1,46 +1,40 @@
-import os
 import json
 import asyncio
-import aio_pika
+from typing import List
 import traceback
-import grpc
-import grpc_service
-import mikanani_grpc_pb2_grpc
-from typing import Optional, List
-from configs import RabbitmqConfig, gRPCServerConfig
+import aio_pika
+from configs import RabbitmqConfig
 from job import RSSJob
 from logger import LOGGER
 
 class MikanamiAnimeSubWorker:
+    r'''
+        Anime subscription worker:
+        (1) Listen rabbitmq sqs task
+        (2) Request & parse rss subscription xmls
+        (3) Collect all need-to-download torrents and send to Qbittorrent service
+    '''
     def __init__(self):
-        config_path = f"{os.path.dirname(os.path.abspath(__file__))}/../config/media"
-        self.job_obj: RSSJob = RSSJob(config_path)
+        self.job_obj = RSSJob()
  
     async def _sqs_consume_callback(self, message: aio_pika.IncomingMessage):
+        # Parse task read from sqs
         msg_dict_list: List[dict] = json.loads(message.body)
         for entry in msg_dict_list:
+            uid = entry.get("uid")
             tlist: List[str] = list()
-            try:
-                uid = entry.get("uid")
-                if uid:
+            if uid:
+                try:
+                    # Get & parse rss xml to gather torrents for each anime
                     tlist = self.job_obj.get_torrent_urls(entry)
-                    LOGGER.info(f"get_torrent_urls success, tlist: {tlist}.")
-                else:
-                    LOGGER.warning(f"empty uid for {entry}, ignored.")
+                except Exception as e:
+                    LOGGER.error(f"[get_torrent_urls][uid: {uid}]Error: exception-{e}, {traceback.format_exc()}")
+                    # await message.reject()
                     continue
-            except Exception as e:
-                LOGGER.error(f"get_torrent_urls error: exception-{e}, {traceback.format_exc()}")
-                # await message.reject()
-                continue
             # await message.ack()
-            
-            try:
-                self.job_obj.send_task_to_qbit({
-                    "uid": uid, "tlist": tlist
-                })
-                LOGGER.info(f"send_task_to_qbit success.")
-            except Exception as e:
-                LOGGER.error(f"send_task_to_qbit error: exception-{e}, {traceback.format_exc()}")
+
+            # Send task to qbittorrent service
+            self.job_obj.send_task_to_qbit({ "uid": uid, "tlist": tlist })
     
             
     async def sqs_async_run(self):
@@ -67,24 +61,3 @@ class MikanamiAnimeSubWorker:
             await connection.close()
             LOGGER.info("rabbitmq channel/conn closed.")
             # raise
-
-            
-class MiakananigRPCSvcWorker:
-    def __init__(self):
-        self.listen_addr = gRPCServerConfig["listenAddr"]
-
-    async def grpc_server(self):
-        try:
-            server = grpc.aio.server()
-            mikanani_grpc_pb2_grpc.add_MikananiServiceServicer_to_server(
-                grpc_service.MikananiSvcServicer(),
-                server,
-            )
-            server.add_insecure_port(self.listen_addr)
-            LOGGER.info(f"mikanani grpc server: start serve at {self.listen_addr}")
-            await server.start()
-            await server.wait_for_termination()
-        except Exception:
-            # TODO: enhance graceful cancel
-            LOGGER.info("mikanani grpc server has been cancelled.")
-            await server.stop(None)

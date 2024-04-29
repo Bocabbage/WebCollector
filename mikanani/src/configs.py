@@ -14,7 +14,7 @@ RSSConfig: Dict[str, str] = {
 
 QbitConfig: Dict[str, str] = {
     'qbit_addr': os.getenv('QBIT_ADDR'),
-    'qbit_port': os.getenv('QBIT_PORT', 8080),
+    'qbit_port': os.getenv('QBIT_PORT', '8080'),
     'torrent_file_dir': os.getenv('TORRENT_FILE_DIR', './'),
     'media_file_dir': os.getenv('MEDIA_FILE_DIR', './'),
     'nfs_media_file_dir': os.getenv('NFS_MEDIA_FILE_DIR'),
@@ -50,6 +50,8 @@ MySQLConfig: dict = {
     'database': 'mikanani',
 }
 
-gRPCServerConfig: dict = {
-    'listenAddr': '[::]:50051',
+RedisConfig: dict = {
+    'host': os.getenv('REDIS_HOST'),
+    'port': os.getenv('REDIS_PORT', '6379'),
+    'password': os.getenv('REDIS_PASSWORD'),
 }

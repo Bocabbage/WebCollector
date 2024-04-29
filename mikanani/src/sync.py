@@ -2,9 +2,10 @@ import re
 import os
 import time
 import traceback
-from bson.int64 import Int64
-from db_helper import get_mongo_client, get_mysql_conn
-from configs import QbitConfig, MongoDBConfig
+from datetime import datetime, timedelta
+import redis
+from db_helper import get_mysql_conn
+from configs import QbitConfig, RedisConfig
 from logger import LOGGER
 from utils import numset2bitmap
 
@@ -14,7 +15,7 @@ class MikanamiAnimeSync:
         anime_infos = dict()
         
         conn = get_mysql_conn()
-        sql = f"SELECT uid, name, download_bitmap FROM `mikanani`.`anime_meta` WHERE is_active IS TRUE;"
+        sql = "SELECT uid, name, download_bitmap FROM `mikanani`.`anime_meta` WHERE is_active IS TRUE;"
         cursor = conn.cursor()
         cursor.execute(sql)
         result = cursor.fetchall()
@@ -57,6 +58,8 @@ class MikanamiAnimeSync:
         
         if to_update_animes:
             LOGGER.info(f"[Sync]need to update bitmap today count: {len(to_update_animes)}")
+            redis_update = dict()
+            timestamp = str(int((datetime.now() + timedelta(days=3)).timestamp()))
             try:
                 conn = get_mysql_conn()
                 for uid, bitmap in to_update_animes.items():
@@ -68,5 +71,17 @@ class MikanamiAnimeSync:
                     cursor.execute(usql)
                     conn.commit()
                     LOGGER.info(f"[Sync][UpdateMySQL][SUCCESS]uid:{uid} bitmap to {bitmap}.")
+                    redis_update[f"{uid}"] = timestamp
+
+                # Update redis
+                host: str = RedisConfig['host']
+                port: int = int(RedisConfig['port'])
+                pwd: str = RedisConfig['password']
+                key = "mikananistate:recentupdate"
+                rds_cli = redis.StrictRedis(host, port, 0, pwd)
+                res = rds_cli.hset(key, mapping=redis_update)
+                rds_cli.expire(key, timedelta(days=3))
+                LOGGER.info(f"[Sync][UpdateRedis]result: {res}")
+
             except Exception as e:
                 LOGGER.error(f"[Sync][FAILED] Exception {e}: {traceback.format_exc()}")

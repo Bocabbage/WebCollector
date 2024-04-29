@@ -2,8 +2,6 @@ package data
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"mikanani-v2/internal/biz"
 	"strconv"
@@ -12,12 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 )
 
-var recentUpdateKey string
-
-func init() {
-	recentUpdateKeyHash := sha256.Sum256([]byte("mikananistate:recentupdate"))
-	recentUpdateKey = hex.EncodeToString(recentUpdateKeyHash[:])
-}
+const recentUpdateKey string = "mikananistate:recentupdate"
 
 type animeStateRepo struct {
 	data *Data

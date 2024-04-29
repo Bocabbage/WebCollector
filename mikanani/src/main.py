@@ -3,7 +3,7 @@ import signal
 import asyncio
 import argparse
 from typing import List
-from worker import MikanamiAnimeSubWorker, MiakananigRPCSvcWorker
+from worker import MikanamiAnimeSubWorker
 from dispatcher import MikanamiAnimeDispatcher
 from sync import MikanamiAnimeSync
 from logger import LOGGER
@@ -23,7 +23,6 @@ async def _mikanani_async_main():
     try:
         tasks = [
             MikanamiAnimeSubWorker().sqs_async_run(), # mikanani-parse-and-send worker
-            MiakananigRPCSvcWorker().grpc_server(),         # mongodb-crud grpc server
         ]
         tasks = [ asyncio.create_task(x) for x in tasks ]
 
@@ -31,9 +30,9 @@ async def _mikanani_async_main():
         LOGGER.info("mikanani sqs_async_run: start")
         await asyncio.gather(*tasks)
     except Exception as e:
-        LOGGER.info(f"Exception {e} happened.")
+        LOGGER.info(f"Exception {e} happened")
     finally:
-        LOGGER.debug(f"Mikanani worker: stopped.")
+        LOGGER.debug("Mikanani worker: stopped")
 
 
 def mikanani_main():
