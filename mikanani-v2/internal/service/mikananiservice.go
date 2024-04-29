@@ -85,12 +85,14 @@ func (s *MikananiServiceService) UpdateAnimeDoc(ctx context.Context, req *pb.Upd
 }
 
 func (s *MikananiServiceService) UpdateAnimeMeta(ctx context.Context, req *pb.UpdateAnimeMetaRequest) (*emptypb.Empty, error) {
-	if err := s.auc.UpdateAnimeMeta(ctx, &biz.AnimeMeta{
-		Uid:            req.GetUpdateAnimeMeta().GetUid(),
-		Name:           req.GetUpdateAnimeMeta().GetName(),
-		DownloadBitMap: req.GetUpdateAnimeMeta().GetDownloadBitmap(),
-		IsActive:       req.GetUpdateAnimeMeta().GetIsActive(),
-		Tags:           req.UpdateAnimeMeta.Tags,
+	// Strict usecase means only takes name/isactive/tags from user-input
+	// This svc will be visited only from UI so some control segments like
+	// [downloadBitmap] will not be updated in this API.
+	if err := s.auc.UpdateAnimeMetaStrict(ctx, &biz.AnimeMeta{
+		Uid:      req.GetUpdateAnimeMeta().GetUid(),
+		Name:     req.GetUpdateAnimeMeta().GetName(),
+		IsActive: req.GetUpdateAnimeMeta().GetIsActive(),
+		Tags:     req.UpdateAnimeMeta.Tags,
 	}); err != nil {
 		return nil, err
 	}

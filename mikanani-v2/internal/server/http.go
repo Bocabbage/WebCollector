@@ -1,7 +1,7 @@
 package server
 
 import (
-	v1 "mikanani-v2/api/helloworld/v1"
+	v2 "mikanani-v2/api/mikanani/v2"
 	"mikanani-v2/internal/conf"
 	"mikanani-v2/internal/service"
 
@@ -11,7 +11,7 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, mikanani *service.MikananiServiceService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -27,6 +27,6 @@ func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
-	v1.RegisterGreeterHTTPServer(srv, greeter)
+	v2.RegisterMikananiServiceHTTPServer(srv, mikanani)
 	return srv
 }

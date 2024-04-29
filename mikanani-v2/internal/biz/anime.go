@@ -16,10 +16,10 @@ type AnimeMeta struct {
 }
 
 type AnimeDoc struct {
-	Uid    int64
-	RssUrl string
-	Rule   string
-	Regex  string
+	Uid    int64  `bson:"uid"`
+	RssUrl string `bson:"rss_url"`
+	Rule   string `bson:"rule"`
+	Regex  string `bson:"regex"`
 }
 
 type AnimeMetaRepo interface {
@@ -56,9 +56,16 @@ func (uc *AnimeUsecase) UpdateAnimeDoc(ctx context.Context, doc *AnimeDoc) error
 	return uc.docRepo.Update(ctx, doc)
 }
 
-func (uc *AnimeUsecase) UpdateAnimeMeta(ctx context.Context, meta *AnimeMeta) error {
-	meta, err := uc.metaRepo.QueryByUid(ctx, meta.Uid)
-	return uc.metaRepo.Update(ctx, meta)
+func (uc *AnimeUsecase) UpdateAnimeMetaStrict(ctx context.Context, meta *AnimeMeta) error {
+	strictUpdateMeta, err := uc.metaRepo.QueryByUid(ctx, meta.Uid)
+	if err != nil {
+		return err
+	}
+	strictUpdateMeta.Name = meta.Name
+	strictUpdateMeta.IsActive = meta.IsActive
+	strictUpdateMeta.Tags = meta.Tags
+
+	return uc.metaRepo.Update(ctx, strictUpdateMeta)
 }
 
 func (uc *AnimeUsecase) InsertAnime(ctx context.Context, meta *AnimeMeta, doc *AnimeDoc) error {

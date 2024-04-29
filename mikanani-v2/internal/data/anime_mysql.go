@@ -21,26 +21,12 @@ type animeMetaRepo struct {
 	log  *log.Helper
 }
 
-type animeDocRepo struct {
-	data *Data
-	log  *log.Helper
-}
-
 func NewAnimeMetaRepo(data *Data, logger log.Logger) biz.AnimeMetaRepo {
 	return &animeMetaRepo{
 		data: data,
 		log:  log.NewHelper(logger),
 	}
 }
-
-func NewAnimeDocRepo(data *Data, logger log.Logger) biz.AnimeDocRepo {
-	return &animeDocRepo{
-		data: data,
-		log:  log.NewHelper(logger),
-	}
-}
-
-// TODO: impl
 
 func (amrp *animeMetaRepo) Count(ctx context.Context) (int64, error) {
 	count, err := amrp.data.mysqlDb.AnimeMeta.Query().Count(ctx)
@@ -107,6 +93,11 @@ func (amrp *animeMetaRepo) Insert(ctx context.Context, meta *biz.AnimeMeta) erro
 		SetIsActive(isActive).
 		SetTags(meta.Tags).
 		Save(ctx)
+
+	if err == nil {
+		amrp.log.Infof("[animeMetaRepo.Insert][uid-%d]success.", meta.Uid)
+	}
+
 	return err
 }
 
@@ -115,13 +106,17 @@ func (amrp *animeMetaRepo) Update(ctx context.Context, meta *biz.AnimeMeta) erro
 	if meta.IsActive > 0 {
 		isActive = true
 	}
-	amrp.data.mysqlDb.AnimeMeta.Update().
+	_, err := amrp.data.mysqlDb.AnimeMeta.Update().
 		Where(animemeta.UIDEQ(meta.Uid)).
 		SetUpdateTime(time.Now()).
 		SetName(meta.Name).
 		SetDownloadBitmap(meta.DownloadBitMap).
 		SetIsActive(isActive).
 		Save(ctx)
+
+	if err == nil {
+		amrp.log.Infof("[animeMetaRepo.Update][uid-%d]success.", meta.Uid)
+	}
 	return nil
 }
 
@@ -153,23 +148,8 @@ func (amrp *animeMetaRepo) Delete(ctx context.Context, uid int64) error {
 	_, err := amrp.data.mysqlDb.AnimeMeta.Delete().
 		Where(animemeta.UIDEQ(uid)).
 		Exec(ctx)
+	if err == nil {
+		amrp.log.Infof("[animeMetaRepo.Delete][uid-%d]success.", uid)
+	}
 	return err
-}
-
-// -----------------------
-
-func (adrp *animeDocRepo) QueryByUid(ctx context.Context, uid int64) (*biz.AnimeDoc, error) {
-	return nil, nil
-}
-
-func (adrp *animeDocRepo) Insert(ctx context.Context, doc *biz.AnimeDoc) error {
-	return nil
-}
-
-func (adrp *animeDocRepo) Update(ctx context.Context, doc *biz.AnimeDoc) error {
-	return nil
-}
-
-func (adrp *animeDocRepo) Delete(ctx context.Context, uid int64) error {
-	return nil
 }
