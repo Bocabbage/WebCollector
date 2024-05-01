@@ -31,11 +31,11 @@ jobs:
     - name: Build Docker image
       run: |
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
-        docker login ${{ secrets.HARBOR_HUB }} -u ${{ secrets.HARBOR_USER }} -p ${{ secrets.HARBOR_PWD }} 
-        docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.HARBOR_REPO }}/$image_name:latest .
+        docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest .
         export KUBECONFIG=$HOME/.kube/config
-        docker push ${{ secrets.HARBOR_REPO }}/$image_name:latest
-        docker rmi ${{ secrets.HARBOR_REPO }}/$image_name:latest
+        docker login ${{ secrets.HARBOR_HUB }} -u ${{ secrets.HARBOR_USER }} -p ${{ secrets.HARBOR_PWD }} 
+        docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
+        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
       
     - name: Deploy on Kubernetes
       run: |
