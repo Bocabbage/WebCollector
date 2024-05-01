@@ -33,8 +33,8 @@ jobs:
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest .
         export KUBECONFIG=$HOME/.kube/config
-        docker login ${{ secrets.HARBOR_HUB }} -u ${{ secrets.HARBOR_USER }} -p ${{ secrets.HARBOR_PWD }} 
-        docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo docker login ${{ secrets.HARBOR_HUB }} -u ${{ secrets.HARBOR_USER }} -p ${{ secrets.HARBOR_PWD }} 
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
         docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
       
     - name: Deploy on Kubernetes
