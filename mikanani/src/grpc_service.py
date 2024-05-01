@@ -175,7 +175,7 @@ class MikananiSvcServicer(MikananiServiceServicer):
                         f"SET name = '{name}', "
                         # f"download_bitmap = {download_bitmap}, "
                         f"is_active = {is_active} "
-                        f"tags = {json.dumps(request.updateAnimeMeta.tags)}" 
+                        # f"tags = {json.dumps(request.updateAnimeMeta.tags)}" 
                         f"WHERE uid = {uid};")
                 cursor.execute(usql)
                 conn.commit()
