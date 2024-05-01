@@ -45,13 +45,13 @@ jobs:
         nfsip="${{ secrets.NFS_SERVER_IP }}"
         mikananinfspath="${{ secrets.MIKANANI_NFS_PATH }}"
 
-        sed -i "s|<DOCKER_HUB_REPO>|${repo}|g" ./deployments/kubernetes/mikanani/worker.yaml
+        sed -i "s|<HARBOR_HUB_REPO>|${repo}|g" ./deployments/kubernetes/mikanani/worker.yaml
         sed -i "s|<MikananiImage>|${image}|g" ./deployments/kubernetes/mikanani/worker.yaml
 
-        sed -i "s|<DOCKER_HUB_REPO>|${repo}|g" ./deployments/kubernetes/mikanani/dispatcher.yaml
+        sed -i "s|<HARBOR_HUB_REPO>|${repo}|g" ./deployments/kubernetes/mikanani/dispatcher.yaml
         sed -i "s|<MikananiImage>|${image}|g" ./deployments/kubernetes/mikanani/dispatcher.yaml
 
-        sed -i "s|<DOCKER_HUB_REPO>|${repo}|g" ./deployments/kubernetes/mikanani/sync.yaml
+        sed -i "s|<HARBOR_HUB_REPO>|${repo}|g" ./deployments/kubernetes/mikanani/sync.yaml
         sed -i "s|<MikananiImage>|${image}|g" ./deployments/kubernetes/mikanani/sync.yaml
 
         sed -i "s|<NFS_SERVER_IP>|${nfsip}|g" ./deployments/kubernetes/mikanani/sync.yaml

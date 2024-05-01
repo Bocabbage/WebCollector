@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: mikanani-worker
-        image: kapibara.harbor.com/<DOCKER_HUB_REPO>/<MikananiImage>
+        image: kapibara.harbor.com/<HARBOR_HUB_REPO>/<MikananiImage>
         imagePullPolicy: Always
         envFrom:
         - secretRef:
