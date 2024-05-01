@@ -1,3 +1,4 @@
+import json
 from mikanani_grpc_pb2_grpc import MikananiServiceServicer
 from mikanani_grpc_pb2 import *
 from google.protobuf.empty_pb2 import Empty
@@ -172,8 +173,9 @@ class MikananiSvcServicer(MikananiServiceServicer):
                 
                 usql = ("UPDATE `mikanani`.`anime_meta` "
                         f"SET name = '{name}', "
-                        f"download_bitmap = {download_bitmap}, "
-                        f"is_active = {is_active} " 
+                        # f"download_bitmap = {download_bitmap}, "
+                        f"is_active = {is_active} "
+                        f"tags = {json.dumps(request.updateAnimeMeta.tags)}" 
                         f"WHERE uid = {uid};")
                 cursor.execute(usql)
                 conn.commit()

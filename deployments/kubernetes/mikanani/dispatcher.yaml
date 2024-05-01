@@ -12,8 +12,8 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: mikanani-dispatcher
-            image: <DOCKER_HUB_REPO>/<MikananiImage>
-            imagePullPolicy: Never
+            image: kapibara.harbor.com/<DOCKER_HUB_REPO>/<MikananiImage>
+            imagePullPolicy: Always
             envFrom:
             - secretRef:
                 name: mikanani-config

@@ -55,6 +55,16 @@ class MikananiServiceStub(object):
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=mikanani__grpc__pb2.GetAnimeCountResponse.FromString,
                 )
+        self.GetRecentUpdateList = channel.unary_unary(
+                '/mikanani.MikananiService/GetRecentUpdateList',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=mikanani__grpc__pb2.GetRecentUpdateListResponse.FromString,
+                )
+        self.DeleteRecentUpdateById = channel.unary_unary(
+                '/mikanani.MikananiService/DeleteRecentUpdateById',
+                request_serializer=mikanani__grpc__pb2.DelRecentUpdateByIdRequest.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                )
 
 
 class MikananiServiceServicer(object):
@@ -108,6 +118,18 @@ class MikananiServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetRecentUpdateList(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteRecentUpdateById(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_MikananiServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -150,6 +172,16 @@ def add_MikananiServiceServicer_to_server(servicer, server):
                     servicer.GetAnimeCount,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=mikanani__grpc__pb2.GetAnimeCountResponse.SerializeToString,
+            ),
+            'GetRecentUpdateList': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetRecentUpdateList,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=mikanani__grpc__pb2.GetRecentUpdateListResponse.SerializeToString,
+            ),
+            'DeleteRecentUpdateById': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteRecentUpdateById,
+                    request_deserializer=mikanani__grpc__pb2.DelRecentUpdateByIdRequest.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -294,5 +326,39 @@ class MikananiService(object):
         return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/GetAnimeCount',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             mikanani__grpc__pb2.GetAnimeCountResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetRecentUpdateList(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/GetRecentUpdateList',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            mikanani__grpc__pb2.GetRecentUpdateListResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteRecentUpdateById(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/mikanani.MikananiService/DeleteRecentUpdateById',
+            mikanani__grpc__pb2.DelRecentUpdateByIdRequest.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -8,18 +8,20 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class AnimeMeta(_message.Message):
-    __slots__ = ("uid", "name", "downloadBitmap", "isActive", "tags")
+    __slots__ = ("uid", "name", "downloadBitmap", "isActive", "episodes", "tags")
     UID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DOWNLOADBITMAP_FIELD_NUMBER: _ClassVar[int]
     ISACTIVE_FIELD_NUMBER: _ClassVar[int]
+    EPISODES_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     uid: int
     name: str
     downloadBitmap: int
     isActive: int
+    episodes: int
     tags: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, uid: _Optional[int] = ..., name: _Optional[str] = ..., downloadBitmap: _Optional[int] = ..., isActive: _Optional[int] = ..., tags: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, uid: _Optional[int] = ..., name: _Optional[str] = ..., downloadBitmap: _Optional[int] = ..., isActive: _Optional[int] = ..., episodes: _Optional[int] = ..., tags: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class AnimeDoc(_message.Message):
     __slots__ = ("uid", "rssUrl", "rule", "regex")
@@ -100,3 +102,15 @@ class GetAnimeCountResponse(_message.Message):
     COUNT_FIELD_NUMBER: _ClassVar[int]
     count: int
     def __init__(self, count: _Optional[int] = ...) -> None: ...
+
+class GetRecentUpdateListResponse(_message.Message):
+    __slots__ = ("uids",)
+    UIDS_FIELD_NUMBER: _ClassVar[int]
+    uids: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, uids: _Optional[_Iterable[int]] = ...) -> None: ...
+
+class DelRecentUpdateByIdRequest(_message.Message):
+    __slots__ = ("uid",)
+    UID_FIELD_NUMBER: _ClassVar[int]
+    uid: int
+    def __init__(self, uid: _Optional[int] = ...) -> None: ...

@@ -39,6 +39,15 @@ class MikanamiAnimeDispatcher:
         )
 
         channel = connection.channel()
+        
+        # If not exist, create queue/exchange/router-key
+        # Queue def
+        channel.queue_declare(queue="mikanani_dispatch", durable=True)
+        # Exchange def
+        channel.exchange_declare("mikanani-direct-ex", "direct", durable=True)
+        # Exchange-Queue bind
+        routing_key = "mikanani-subanime-download"
+        channel.queue_bind(queue="mikanani_dispatch", exchange="mikanani-direct-ex", routing_key=routing_key)
 
         json_message = json.dumps(data_to_send, ensure_ascii=False)
         channel.basic_publish(exchange="mikanani-direct-ex",
