@@ -49,7 +49,7 @@ class MikanamiAnimeSubWorker:
             connection = await aio_pika.connect(connection_url)        
             channel = await connection.channel()
     
-            queue = await channel.get_queue(queue_name)
+            queue = await channel.declare_queue(queue_name, auto_delete=False, durable=True)
             await queue.consume(self._sqs_consume_callback, no_ack=True)
 
             LOGGER.info("Start rabbitmq serve: press Ctrl+c to stop.")
