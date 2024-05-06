@@ -1,6 +1,6 @@
-FROM golang:1.19 AS builder
+FROM golang:1.21 AS builder
 
-COPY . /src
+COPY ./mikanani-v2 /src
 WORKDIR /src
 
 RUN GOPROXY=https://goproxy.cn make build
@@ -17,8 +17,4 @@ COPY --from=builder /src/bin /app
 
 WORKDIR /app
 
-EXPOSE 8000
-EXPOSE 9000
-VOLUME /data/conf
-
-CMD ["./server", "-conf", "/data/conf"]
+EXPOSE 50051

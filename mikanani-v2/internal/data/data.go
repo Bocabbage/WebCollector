@@ -6,10 +6,10 @@ import (
 	"mikanani-v2/internal/data/ent"
 	"time"
 
-	"ariga.io/entcache"
+	_ "github.com/go-sql-driver/mysql"
+
 	dialectSql "entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
-	rdsv8 "github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -38,24 +38,31 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	if err != nil {
 		log.Errorf("[NewData]failed at sql.Open: %v", err)
 		return nil, nil, err
+	} else {
+		if err := sqlDrv.DB().Ping(); err != nil {
+			log.Errorf("[NewData]failed at sql.Ping: %v", err)
+			return nil, nil, err
+		} else {
+			log.Info("[NewData]mysql client init success.")
+		}
 	}
 
-	sqlDrvCache := entcache.NewDriver(
-		sqlDrv,
-		entcache.TTL(1*time.Hour),
-		entcache.Levels(
-			entcache.NewLRU(256),
-			entcache.NewRedis(rdsv8.NewClient(
-				&rdsv8.Options{
-					Addr:     c.Redis.Addr,
-					Password: c.Redis.Password,
-					DB:       int(c.Redis.Db),
-				},
-			)),
-		),
-	)
+	// sqlDrvCache := entcache.NewDriver(
+	// 	sqlDrv,
+	// 	entcache.TTL(1*time.Hour),
+	// 	entcache.Levels(
+	// 		entcache.NewLRU(256),
+	// 		entcache.NewRedis(rdsv8.NewClient(
+	// 			&rdsv8.Options{
+	// 				Addr:     c.Redis.Addr,
+	// 				Password: c.Redis.Password,
+	// 				DB:       int(c.Redis.Db),
+	// 			},
+	// 		)),
+	// 	),
+	// )
 
-	mysqlClient := ent.NewClient(ent.Driver(sqlDrvCache))
+	mysqlClient := ent.NewClient(ent.Driver(sqlDrv))
 
 	// ----- Redis Client init -----
 	cfg := redis.Options{
@@ -69,6 +76,8 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	if err := redisClient.Ping(rdsCtx).Err(); err != nil {
 		log.Error("[NewData]redis ping take too much time, regarded as failed.")
 		return nil, nil, err
+	} else {
+		log.Info("[NewData]redis client init success.")
 	}
 
 	// ----- Mongo Client init -----
@@ -83,6 +92,8 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	if err := mongoClient.Ping(mongoCtx, nil); err != nil {
 		log.Error("[NewData]mongo ping take too much time, regarded as failed.")
 		return nil, nil, err
+	} else {
+		log.Info("[NewData]mongodb client init success.")
 	}
 
 	d := &Data{

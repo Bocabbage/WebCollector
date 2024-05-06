@@ -1,0 +1,24 @@
+server:
+  http:
+    addr: 0.0.0.0:80
+    timeout: 3s
+  grpc:
+    addr: 0.0.0.0:50051
+    timeout: 3s
+  tls:
+    cert: ""
+    key: ""
+data:
+  database:
+    driver: mysql
+    source: MIKANANI_MYSQL_URL
+  redis:
+    addr: REDIS_ADDR
+    password: REDIS_PASSWORD
+    db: 0
+  mongo:
+    host: KAPIBARA_MONGODB_SVC_URL
+    mikandb: KAPIBARA_MONGODB_MIKANDB
+    mikancollection: KAPIBARA_MONGODB_MIKANCOLLECTION
+utils:
+  snowflakeId: 42
