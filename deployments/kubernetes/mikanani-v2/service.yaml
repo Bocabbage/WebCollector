@@ -1,1 +1,14 @@
-TODO
+apiVersion: v1
+kind: Service
+metadata:
+  name: mikanani-api-svc
+  namespace: web-general
+spec:
+  selector:
+    app: mikanani-worker-api
+  ports:
+    - protocol: TCP
+      name: grpc-svc
+      port: 50051      
+      targetPort: 50051
+  type: ClusterIP

@@ -20,3 +20,5 @@ data:
     host: KAPIBARA_MONGODB_SVC_URL
     mikandb: KAPIBARA_MONGODB_MIKANDB
     mikancollection: KAPIBARA_MONGODB_MIKANCOLLECTION
+utils:
+  snowflakeId: 42

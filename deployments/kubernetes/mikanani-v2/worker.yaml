@@ -1,1 +1,45 @@
-TODO
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mikanani-worker-api
+  namespace: web-general
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mikanani-worker-api
+      feature: worker
+  template:
+    metadata:
+      labels:
+        app: mikanani-worker-api
+        feature: worker
+    spec:
+      volumes:
+      - name: config-volume
+        emptyDir: {}
+
+      containers:
+      - name: mikanani-worker-api
+        image: kapibara.harbor.com/<HARBOR_HUB_REPO>/<MikananiV2Image>
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: mikanani-config
+        command: ["./server"]
+        args: ["-conf", "/configs/config.yaml"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /configs
+      initContainers:
+      - name: config-init-sidecar
+        image: kapibara.harbor.com/<HARBOR_HUB_REPO>/<MikananiAPIInitImage>
+        imagePullPolicy: Always
+        args: ["python", "./generate_from_temp.py"]
+        volumeMounts:
+        - name: config-volume
+          mountPath: /configs

@@ -6,6 +6,8 @@ import (
 	"mikanani-v2/internal/data/ent"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"ariga.io/entcache"
 	dialectSql "entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"

@@ -9,12 +9,14 @@ on:
         description: module
         options:
           - Mikanani-sqs
+          - Mikanani-api
         required: true
       submodule:
         type: choice
-        description: worker/dispatcher/sync/all
+        description: worker/worker-api/dispatcher/sync/all
         options:
           - worker
+          - worker-api
           - dispatcher
           - sync
           - all
@@ -31,20 +33,37 @@ jobs:
     - name: Build Docker image
       run: |
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
+        case "${{ github.event.inputs.module }}" in
+        "Mikanani-sqs")
         docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest .
         export KUBECONFIG=$HOME/.kube/config
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker login ${{ secrets.HARBOR_HUB }} -u ${{ secrets.HARBOR_USER }} -p ${{ secrets.HARBOR_PWD }} 
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
         docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
+        ;;
+        "Mikanani-api")
+        init_image_name="${image_name}-init"
+        docker build -f ./deployments/docker/mikanani-v2/worker.Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest .
+        docker build -f ./deployments/docker/mikanani-v2/sidecar.Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$init_image_name:latest .
+        export KUBECONFIG=$HOME/.kube/config
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker login ${{ secrets.HARBOR_HUB }} -u ${{ secrets.HARBOR_USER }} -p ${{ secrets.HARBOR_PWD }} 
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$init_image_name:latest
+        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
+        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$init_image_name:latest
+        ;;
+        easc
       
     - name: Deploy on Kubernetes
       run: |
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         image="${image_name}:latest"
         repo="${{ secrets.HARBOR_REPO }}"
+
+        case "${{ github.event.inputs.module }}" in
+        "Mikanani-sqs")
         nfsip="${{ secrets.NFS_SERVER_IP }}"
         mikananinfspath="${{ secrets.MIKANANI_NFS_PATH }}"
-
         sed -i "s|<HARBOR_HUB_REPO>|${repo}|g" ./deployments/kubernetes/mikanani/worker.yaml
         sed -i "s|<MikananiImage>|${image}|g" ./deployments/kubernetes/mikanani/worker.yaml
 
@@ -56,8 +75,21 @@ jobs:
 
         sed -i "s|<NFS_SERVER_IP>|${nfsip}|g" ./deployments/kubernetes/mikanani/sync.yaml
         sed -i "s|<MIKANANI_NFS_PATH>|${mikananinfspath}|g" ./deployments/kubernetes/mikanani/sync.yaml
+        ;;
+        "Mikanani-api")
+        init_image="${image_name}-init:latest"
+        sed -i "s|<HARBOR_HUB_REPO>|${repo}|g" ./deployments/kubernetes/mikanani-v2/worker.yaml
+        sed -i "s|<MikananiV2Image>|${image}|g" ./deployments/kubernetes/mikanani-v2/worker.yaml
+        sed -i "s|<MikananiAPIInitImage>|${init_image}|g" ./deployments/kubernetes/mikanani-v2/worker.yaml
+        ;;
+        esac
 
         case "${{ github.event.inputs.submodule }}" in
+        "worker-api")
+        echo "Deploy worker-api only..."
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani-v2/worker.yaml
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani-v2/service.yaml
+        ;;
         "worker")
         echo "Deploy worker only..."
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
@@ -72,7 +104,7 @@ jobs:
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/sync.yaml
         ;;
         "all")
-        echo "Deploy all..."
+        echo "Deploy Mikanani-sqs all..."
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/worker.yaml
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/service.yaml
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S kubectl apply -f ./deployments/kubernetes/mikanani/dispatcher.yaml
