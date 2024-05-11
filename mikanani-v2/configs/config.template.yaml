@@ -5,9 +5,9 @@ server:
   grpc:
     addr: 0.0.0.0:50051
     timeout: 3s
-  # tls:
-  #   cert: /cert/path
-  #   key: /key/path
+  tls:
+    cert: ""
+    key: ""
 data:
   database:
     driver: mysql
