@@ -26,7 +26,7 @@ spec:
         envFrom:
         - secretRef:
             name: mikanani-config
-        command: ["./server"]
+        command: ["./mikanani-v2"]
         args: ["-conf", "/configs/config.yaml"]
         resources:
           limits:
