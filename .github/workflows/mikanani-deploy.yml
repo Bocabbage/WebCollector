@@ -52,7 +52,7 @@ jobs:
         docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${image_name}:latest
         docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${init_image_name}:latest
         ;;
-        easc
+        esac
       
     - name: Deploy on Kubernetes
       run: |
