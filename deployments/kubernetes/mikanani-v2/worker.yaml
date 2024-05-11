@@ -39,6 +39,9 @@ spec:
       - name: config-init-sidecar
         image: kapibara.harbor.com/<HARBOR_HUB_REPO>/<MikananiAPIInitImage>
         imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: mikanani-config
         args: ["python", "./generate_from_temp.py"]
         volumeMounts:
         - name: config-volume
