@@ -8,10 +8,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"ariga.io/entcache"
 	dialectSql "entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
-	rdsv8 "github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -49,22 +47,22 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 		}
 	}
 
-	sqlDrvCache := entcache.NewDriver(
-		sqlDrv,
-		entcache.TTL(1*time.Hour),
-		entcache.Levels(
-			entcache.NewLRU(256),
-			entcache.NewRedis(rdsv8.NewClient(
-				&rdsv8.Options{
-					Addr:     c.Redis.Addr,
-					Password: c.Redis.Password,
-					DB:       int(c.Redis.Db),
-				},
-			)),
-		),
-	)
+	// sqlDrvCache := entcache.NewDriver(
+	// 	sqlDrv,
+	// 	entcache.TTL(1*time.Hour),
+	// 	entcache.Levels(
+	// 		entcache.NewLRU(256),
+	// 		entcache.NewRedis(rdsv8.NewClient(
+	// 			&rdsv8.Options{
+	// 				Addr:     c.Redis.Addr,
+	// 				Password: c.Redis.Password,
+	// 				DB:       int(c.Redis.Db),
+	// 			},
+	// 		)),
+	// 	),
+	// )
 
-	mysqlClient := ent.NewClient(ent.Driver(sqlDrvCache))
+	mysqlClient := ent.NewClient(ent.Driver(sqlDrv))
 
 	// ----- Redis Client init -----
 	cfg := redis.Options{
