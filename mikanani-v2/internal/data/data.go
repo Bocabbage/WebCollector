@@ -38,7 +38,7 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	)
 
 	if err != nil {
-		log.Errorf("[NewData]failed at sql.Open: %v", err)
+		log.Errorf("[NewData]failed at sql.Open: %v, source: %v", err, c.Database.Source)
 		return nil, nil, err
 	}
 
