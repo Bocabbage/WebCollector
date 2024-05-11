@@ -38,8 +38,15 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	)
 
 	if err != nil {
-		log.Errorf("[NewData]failed at sql.Open: %v, source: %v", err, c.Database.Source)
+		log.Errorf("[NewData]failed at sql.Open: %v", err)
 		return nil, nil, err
+	} else {
+		if err := sqlDrv.DB().Ping(); err != nil {
+			log.Errorf("[NewData]failed at sql.Ping: %v", err)
+			return nil, nil, err
+		} else {
+			log.Info("[NewData]mysql client init success.")
+		}
 	}
 
 	sqlDrvCache := entcache.NewDriver(
@@ -71,6 +78,8 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	if err := redisClient.Ping(rdsCtx).Err(); err != nil {
 		log.Error("[NewData]redis ping take too much time, regarded as failed.")
 		return nil, nil, err
+	} else {
+		log.Info("[NewData]redis client init success.")
 	}
 
 	// ----- Mongo Client init -----
@@ -85,6 +94,8 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	if err := mongoClient.Ping(mongoCtx, nil); err != nil {
 		log.Error("[NewData]mongo ping take too much time, regarded as failed.")
 		return nil, nil, err
+	} else {
+		log.Info("[NewData]mongodb client init success.")
 	}
 
 	d := &Data{
