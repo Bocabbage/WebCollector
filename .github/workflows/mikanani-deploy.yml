@@ -35,22 +35,22 @@ jobs:
         image_name=`echo ${{ github.event.inputs.module }} | awk '{print tolower($1)}'`
         case "${{ github.event.inputs.module }}" in
         "Mikanani-sqs")
-        docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest .
+        docker build -f ./deployments/docker/mikanani/Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${image_name}:latest .
         export KUBECONFIG=$HOME/.kube/config
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker login ${{ secrets.HARBOR_HUB }} -u ${{ secrets.HARBOR_USER }} -p ${{ secrets.HARBOR_PWD }} 
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
-        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${image_name}:latest
+        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${image_name}:latest
         ;;
         "Mikanani-api")
         init_image_name="${image_name}-init"
-        docker build -f ./deployments/docker/mikanani-v2/worker.Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest .
-        docker build -f ./deployments/docker/mikanani-v2/sidecar.Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$init_image_name:latest .
+        docker build -f ./deployments/docker/mikanani-v2/worker.Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${image_name}:latest .
+        docker build -f ./deployments/docker/mikanani-v2/sidecar.Dockerfile -t ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${init_image_name}:latest .
         export KUBECONFIG=$HOME/.kube/config
         echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker login ${{ secrets.HARBOR_HUB }} -u ${{ secrets.HARBOR_USER }} -p ${{ secrets.HARBOR_PWD }} 
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
-        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$init_image_name:latest
-        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$image_name:latest
-        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/$init_image_name:latest
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${image_name}:latest
+        echo ${{ secrets.M14_SUDO_PWD }} | sudo -S docker push ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${init_image_name}:latest
+        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${image_name}:latest
+        docker rmi ${{ secrets.HARBOR_HUB }}/${{ secrets.HARBOR_REPO }}/${init_image_name}:latest
         ;;
         easc
       
