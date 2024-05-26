@@ -61,7 +61,7 @@ class RSSJob:
             rss_session.mount("https://", HTTPAdapter(max_retries=retries))
 
             # Get 
-            response = rss_session.get(rss_url, proxies=self.proxies, timeout=60)
+            response = rss_session.get(rss_url, proxies=self.proxies, timeout=180)
             if response.status_code != 200:
                 raise RSSRuleFileError(
                     message=f"[requests][failed][status code: {response.status_code}]",
